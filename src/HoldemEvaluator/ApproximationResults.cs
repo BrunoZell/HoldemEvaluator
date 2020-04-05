@@ -1,8 +1,6 @@
-﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -38,22 +36,12 @@ namespace HoldemEvaluator
         /// <summary>
         /// Access a players approximation result by his position at the table
         /// </summary>
-        public PlayerResults this[int position] {
-            get {
-                return _playerResults[position];
-            }
-        }
+        public PlayerResults this[int position] => _playerResults[position];
 
         #region IEnumerable implementation
-        public IEnumerator<PlayerResults> GetEnumerator()
-        {
-            return _playerResults.GetEnumerator();
-        }
+        public IEnumerator<PlayerResults> GetEnumerator() => _playerResults.GetEnumerator();
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion
     }
 }

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace HoldemEvaluator
 {
     public partial struct ApproximationResults
@@ -32,10 +26,7 @@ namespace HoldemEvaluator
             /// </summary>
             public HoleCards HoleCards { get; }
 
-            public override string ToString()
-            {
-                return $"{HoleCards}: {Equity:0.00 %}";
-            }
+            public override string ToString() => $"{HoleCards}: {Equity:0.00 %}";
         }
     }
 }

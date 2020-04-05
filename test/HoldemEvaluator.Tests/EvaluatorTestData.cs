@@ -1,8 +1,4 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator.Tests
 {
@@ -20,10 +16,6 @@ namespace HoldemEvaluator.Tests
             new string[] {"7h8h", "6s5c", "6h7c6dThJh"},
         };
 
-        public static IEnumerable<object[]> TestData {
-            get {
-                return _data;
-            }
-        }
+        public static IEnumerable<object[]> TestData => _data;
     }
 }

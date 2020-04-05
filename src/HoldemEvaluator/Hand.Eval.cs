@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -133,9 +131,9 @@ namespace HoldemEvaluator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static void ConvertToSuits(ulong cards, out uint spades, out uint hearts, out uint clubs, out uint diamonds)
             {
-                spades =   Reverse(ShiftBits(Masks.SuitBitMasks[3] & cards, 0));
-                hearts =   Reverse(ShiftBits(Masks.SuitBitMasks[2] & cards, 1));
-                clubs =    Reverse(ShiftBits(Masks.SuitBitMasks[1] & cards, 2));
+                spades = Reverse(ShiftBits(Masks.SuitBitMasks[3] & cards, 0));
+                hearts = Reverse(ShiftBits(Masks.SuitBitMasks[2] & cards, 1));
+                clubs = Reverse(ShiftBits(Masks.SuitBitMasks[1] & cards, 2));
                 diamonds = Reverse(ShiftBits(Masks.SuitBitMasks[0] & cards, 3));
             }
 
@@ -189,9 +187,9 @@ namespace HoldemEvaluator
             /// <returns>The type of holding represented as an enum</returns>
             public static Holdings GetHoldingType(ulong cards)
             {
-                for(int i = GetHoldings.Length - 1; i >= 0; i--) {
+                for (int i = GetHoldings.Length - 1; i >= 0; i--) {
                     int current = GetHoldings[i](cards);
-                    if(!isError(current)) {
+                    if (!isError(current)) {
                         return (Holdings)i;
                     }
                 }
@@ -232,7 +230,7 @@ namespace HoldemEvaluator
             {
                 int cardCount = Bin.GetCardCount(cards);    // How many distinct cards are in the hand
 #if DEBUG
-                if(cardCount < 1 || cardCount > 7)
+                if (cardCount < 1 || cardCount > 7)
                     throw new ArgumentOutOfRangeException(nameof(cards), cards, "This function only supports 1 to 7 card hands");
 #endif
                 ConvertToSuits(cards, out uint ss, out uint sh, out uint sc, out uint sd);
@@ -247,30 +245,30 @@ namespace HoldemEvaluator
                 /* Check for straight, flush, or straight flush, and return if we can
                    determine immediately that this is the best possible hand 
                 */
-                if(rankCount >= 5) {
-                    if(hammeringWeightLUT[ss] >= 5) {
-                        if(straightHighCardLUT[ss] != 0)
+                if (rankCount >= 5) {
+                    if (hammeringWeightLUT[ss] >= 5) {
+                        if (straightHighCardLUT[ss] != 0)
                             return HANDTYPE_VALUE_STRAIGHTFLUSH + ((uint)straightHighCardLUT[ss] << TOP_CARD_SHIFT);
                         else
                             returnValue = HANDTYPE_VALUE_FLUSH + topFiveCardsLUT[ss];
-                    } else if(hammeringWeightLUT[sc] >= 5) {
-                        if(straightHighCardLUT[sc] != 0)
+                    } else if (hammeringWeightLUT[sc] >= 5) {
+                        if (straightHighCardLUT[sc] != 0)
                             return HANDTYPE_VALUE_STRAIGHTFLUSH + ((uint)straightHighCardLUT[sc] << TOP_CARD_SHIFT);
                         else
                             returnValue = HANDTYPE_VALUE_FLUSH + topFiveCardsLUT[sc];
-                    } else if(hammeringWeightLUT[sd] >= 5) {
-                        if(straightHighCardLUT[sd] != 0)
+                    } else if (hammeringWeightLUT[sd] >= 5) {
+                        if (straightHighCardLUT[sd] != 0)
                             return HANDTYPE_VALUE_STRAIGHTFLUSH + ((uint)straightHighCardLUT[sd] << TOP_CARD_SHIFT);
                         else
                             returnValue = HANDTYPE_VALUE_FLUSH + topFiveCardsLUT[sd];
-                    } else if(hammeringWeightLUT[sh] >= 5) {
-                        if(straightHighCardLUT[sh] != 0)
+                    } else if (hammeringWeightLUT[sh] >= 5) {
+                        if (straightHighCardLUT[sh] != 0)
                             return HANDTYPE_VALUE_STRAIGHTFLUSH + ((uint)straightHighCardLUT[sh] << TOP_CARD_SHIFT);
                         else
                             returnValue = HANDTYPE_VALUE_FLUSH + topFiveCardsLUT[sh];
                     } else {
                         uint st = straightHighCardLUT[ranks];
-                        if(st != 0)
+                        if (st != 0)
                             returnValue = HANDTYPE_VALUE_STRAIGHT + (st << TOP_CARD_SHIFT);
                     };
 
@@ -280,7 +278,7 @@ namespace HoldemEvaluator
                        found a five card hand, just return.  This skips the whole process of
                        computing two_mask/three_mask/etc.
                     */
-                    if(returnValue != 0 && rankDuplicates < 3)
+                    if (returnValue != 0 && rankDuplicates < 3)
                         return returnValue;
                 }
 
@@ -290,11 +288,11 @@ namespace HoldemEvaluator
                    2) there's a flush or straight, but we know that there are enough
                       duplicates to make a full house / quads possible.  
                  */
-                switch(rankDuplicates) {
-                case 0:
-                    /* It's a no-pair hand */
-                    return HANDTYPE_VALUE_HIGHCARD + topFiveCardsLUT[ranks];
-                case 1: {
+                switch (rankDuplicates) {
+                    case 0:
+                        /* It's a no-pair hand */
+                        return HANDTYPE_VALUE_HIGHCARD + topFiveCardsLUT[ranks];
+                    case 1: {
                         /* It's a one-pair hand */
                         uint t, kickers;
 
@@ -309,74 +307,74 @@ namespace HoldemEvaluator
                         return returnValue;
                     }
 
-                case 2:
-                    /* Either two pair or trips */
-                    two_mask = ranks ^ (sc ^ sd ^ sh ^ ss);
-                    if(two_mask != 0) {
-                        uint t = ranks ^ two_mask; /* Exactly two bits set in two_mask */
-                        returnValue = (uint)(HANDTYPE_VALUE_TWOPAIR
-                            + (topFiveCardsLUT[two_mask]
-                            & (TOP_CARD_MASK | SECOND_CARD_MASK))
-                            + (topCardLUT[t] << THIRD_CARD_SHIFT));
+                    case 2:
+                        /* Either two pair or trips */
+                        two_mask = ranks ^ (sc ^ sd ^ sh ^ ss);
+                        if (two_mask != 0) {
+                            uint t = ranks ^ two_mask; /* Exactly two bits set in two_mask */
+                            returnValue = (uint)(HANDTYPE_VALUE_TWOPAIR
+                                + (topFiveCardsLUT[two_mask]
+                                & (TOP_CARD_MASK | SECOND_CARD_MASK))
+                                + (topCardLUT[t] << THIRD_CARD_SHIFT));
 
-                        return returnValue;
-                    } else {
-                        uint t, second;
-                        three_mask = ((sc & sd) | (sh & ss)) & ((sc & sh) | (sd & ss));
-                        returnValue = (uint)(HANDTYPE_VALUE_TRIPS + (topCardLUT[three_mask] << TOP_CARD_SHIFT));
-                        t = ranks ^ three_mask; /* Only one bit set in three_mask */
-                        second = topCardLUT[t];
-                        returnValue += (second << SECOND_CARD_SHIFT);
-                        t ^= (1U << (int)second);
-                        returnValue += (uint)(topCardLUT[t] << THIRD_CARD_SHIFT);
-                        return returnValue;
-                    }
+                            return returnValue;
+                        } else {
+                            uint t, second;
+                            three_mask = ((sc & sd) | (sh & ss)) & ((sc & sh) | (sd & ss));
+                            returnValue = (uint)(HANDTYPE_VALUE_TRIPS + (topCardLUT[three_mask] << TOP_CARD_SHIFT));
+                            t = ranks ^ three_mask; /* Only one bit set in three_mask */
+                            second = topCardLUT[t];
+                            returnValue += (second << SECOND_CARD_SHIFT);
+                            t ^= (1U << (int)second);
+                            returnValue += (uint)(topCardLUT[t] << THIRD_CARD_SHIFT);
+                            return returnValue;
+                        }
 
-                default:
-                    /* Possible quads, fullhouse, straight or flush, or two pair */
-                    four_mask = sh & sd & sc & ss;
-                    if(four_mask != 0) {
-                        uint tc = topCardLUT[four_mask];
-                        returnValue = (uint)(HANDTYPE_VALUE_FOUR_OF_A_KIND
-                            + (tc << TOP_CARD_SHIFT)
-                            + ((topCardLUT[ranks ^ (1U << (int)tc)]) << SECOND_CARD_SHIFT));
-                        return returnValue;
-                    };
+                    default:
+                        /* Possible quads, fullhouse, straight or flush, or two pair */
+                        four_mask = sh & sd & sc & ss;
+                        if (four_mask != 0) {
+                            uint tc = topCardLUT[four_mask];
+                            returnValue = (uint)(HANDTYPE_VALUE_FOUR_OF_A_KIND
+                                + (tc << TOP_CARD_SHIFT)
+                                + ((topCardLUT[ranks ^ (1U << (int)tc)]) << SECOND_CARD_SHIFT));
+                            return returnValue;
+                        };
 
-                    /* Technically, three_mask as defined below is really the set of
-                       bits which are set in three or four of the suits, but since
-                       we've already eliminated quads, this is OK */
-                    /* Similarly, two_mask is really two_or_four_mask, but since we've
-                       already eliminated quads, we can use this shortcut */
+                        /* Technically, three_mask as defined below is really the set of
+                           bits which are set in three or four of the suits, but since
+                           we've already eliminated quads, this is OK */
+                        /* Similarly, two_mask is really two_or_four_mask, but since we've
+                           already eliminated quads, we can use this shortcut */
 
-                    two_mask = ranks ^ (sc ^ sd ^ sh ^ ss);
-                    if(hammeringWeightLUT[two_mask] != rankDuplicates) {
-                        /* Must be some trips then, which really means there is a 
-                           full house since n_dups >= 3 */
-                        uint tc, t;
-                        three_mask = ((sc & sd) | (sh & ss)) & ((sc & sh) | (sd & ss));
-                        returnValue = HANDTYPE_VALUE_FULLHOUSE;
-                        tc = topCardLUT[three_mask];
-                        returnValue += (tc << TOP_CARD_SHIFT);
-                        t = (two_mask | three_mask) ^ (1U << (int)tc);
-                        returnValue += (uint)(topCardLUT[t] << SECOND_CARD_SHIFT);
-                        return returnValue;
-                    };
+                        two_mask = ranks ^ (sc ^ sd ^ sh ^ ss);
+                        if (hammeringWeightLUT[two_mask] != rankDuplicates) {
+                            /* Must be some trips then, which really means there is a 
+                               full house since n_dups >= 3 */
+                            uint tc, t;
+                            three_mask = ((sc & sd) | (sh & ss)) & ((sc & sh) | (sd & ss));
+                            returnValue = HANDTYPE_VALUE_FULLHOUSE;
+                            tc = topCardLUT[three_mask];
+                            returnValue += (tc << TOP_CARD_SHIFT);
+                            t = (two_mask | three_mask) ^ (1U << (int)tc);
+                            returnValue += (uint)(topCardLUT[t] << SECOND_CARD_SHIFT);
+                            return returnValue;
+                        };
 
-                    if(returnValue != 0) /* flush and straight */
-                        return returnValue;
-                    else {
-                        /* Must be two pair */
-                        uint top, second;
+                        if (returnValue != 0) /* flush and straight */
+                            return returnValue;
+                        else {
+                            /* Must be two pair */
+                            uint top, second;
 
-                        returnValue = HANDTYPE_VALUE_TWOPAIR;
-                        top = topCardLUT[two_mask];
-                        returnValue += (top << TOP_CARD_SHIFT);
-                        second = topCardLUT[two_mask ^ (1 << (int)top)];
-                        returnValue += (second << SECOND_CARD_SHIFT);
-                        returnValue += (uint)((topCardLUT[ranks ^ (1U << (int)top) ^ (1 << (int)second)]) << THIRD_CARD_SHIFT);
-                        return returnValue;
-                    }
+                            returnValue = HANDTYPE_VALUE_TWOPAIR;
+                            top = topCardLUT[two_mask];
+                            returnValue += (top << TOP_CARD_SHIFT);
+                            second = topCardLUT[two_mask ^ (1 << (int)top)];
+                            returnValue += (second << SECOND_CARD_SHIFT);
+                            returnValue += (uint)((topCardLUT[ranks ^ (1U << (int)top) ^ (1 << (int)second)]) << THIRD_CARD_SHIFT);
+                            return returnValue;
+                        }
                 }
             }
 
@@ -387,9 +385,9 @@ namespace HoldemEvaluator
             /// <returns>A readable representation of the holding</returns>
             public static string GetHandDescription(ulong cards)
             {
-                for(int i = GetHoldings.Length - 1; i >= 0; i--) {
+                for (int i = GetHoldings.Length - 1; i >= 0; i--) {
                     var Current = GetHoldings[i](cards);
-                    if(!isError(Current)) {
+                    if (!isError(Current)) {
                         // Best holding found
                         // Todo: further rank description
                         return $"{Enum.GetName(typeof(Holdings), i)}";//, {String.Join(", ", Current.Select(c => Notation.Ranks[c]))}";
@@ -408,13 +406,13 @@ namespace HoldemEvaluator
             /// <returns>High card of the straight flush. On error -1.</returns>
             private static int GetStraightFlush(ulong cards)
             {
-                var highCard = cards & (cards >> 4) & (cards >> 8) & (cards >> 12) & (cards >> 16);
-                if(Hand.Bin.GetCardCount(highCard) == 0) {
+                ulong highCard = cards & (cards >> 4) & (cards >> 8) & (cards >> 12) & (cards >> 16);
+                if (Bin.GetCardCount(highCard) == 0) {
                     // Test for a wheel
-                    for(int s = 0; s < SuitCount; s++) {
+                    for (int s = 0; s < SuitCount; s++) {
                         ulong suitedCards = cards & Masks.SuitBitMasks[s];
                         ulong suitedWheel = Masks.WheelBitMasks & Masks.SuitBitMasks[s];
-                        if((suitedWheel & suitedCards) == suitedWheel) {
+                        if ((suitedWheel & suitedCards) == suitedWheel) {
                             // Wheel found
                             return 3;
                         }
@@ -430,10 +428,7 @@ namespace HoldemEvaluator
             /// </summary>
             /// <returns>Rank of the straight flush starting from 0 for the lowest possible. On error -1.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int GetStraightFlushStrength(ulong cards)
-            {
-                return GetStraightFlush(cards);
-            }
+            private static int GetStraightFlushStrength(ulong cards) => GetStraightFlush(cards);
 
             #endregion
 
@@ -445,8 +440,8 @@ namespace HoldemEvaluator
             /// <returns>Face card value of the four of a kind. On error -1.</returns>
             private static int GetFourOfAKind(ulong cards)
             {
-                var rank = cards & (cards >> 1) & (cards >> 2) & (cards >> 3) & Masks.FourOfaKindBitMask;
-                if(Hand.Bin.GetCardCount(rank) == 0)
+                ulong rank = cards & (cards >> 1) & (cards >> 2) & (cards >> 3) & Masks.FourOfaKindBitMask;
+                if (Bin.GetCardCount(rank) == 0)
                     return -1; // No four of a kind found
                 return Card.Bin.GetRank(rank);
             }
@@ -458,17 +453,18 @@ namespace HoldemEvaluator
             /// <returns>Rank of the four of a kind starting from 0 for the lowest possible. On error -1.</returns>
             private static int GetFourOfAKindStrength(ulong cards)
             {
-                var fourOfAKind = GetFourOfAKind(cards);
-                if(isError(fourOfAKind))
+                int fourOfAKind = GetFourOfAKind(cards);
+                if (isError(fourOfAKind))
                     return -1;
 
                 // Remove card bits of the three of a kind
-                cards &= ~(Masks.RankBitMasks[fourOfAKind]);
+                cards &= ~Masks.RankBitMasks[fourOfAKind];
 
                 int kickerAmt = KickersForHolding[(int)Holdings.FourOfAKind];
                 int kickerRank = GetKickerStrength(cards, kickerAmt);
-                if(kickerRank == -1)
+                if (kickerRank == -1)
                     return -1;
+
                 return fourOfAKind * KickerCombos[kickerAmt] + kickerRank;
             }
 
@@ -484,11 +480,11 @@ namespace HoldemEvaluator
             {
                 int ranks = 0;
                 bool firstPairFound = false;
-                for(int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
+                for (int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
                     // Loop through all ranks and test for three of a kinds,
                     // after one is found it is searched for a pair
-                    if(Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == (!firstPairFound ? 3 : 2)) {
-                        if(firstPairFound) {
+                    if (Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == (!firstPairFound ? 3 : 2)) {
+                        if (firstPairFound) {
                             ranks = SetBinaryRank(ranks, i, 1);
                             return SetBinaryRankCount(ranks, 2);
                         } else {
@@ -508,8 +504,8 @@ namespace HoldemEvaluator
             /// <returns>Rank of the full house starting from 0 for the lowest possible. On error -1.</returns>
             private static int GetFullHouseStrength(ulong cards)
             {
-                var fullHouse = GetFullHouse(cards);
-                if(isError(fullHouse) || GetBinaryRankCount(fullHouse) != 2)
+                int fullHouse = GetFullHouse(cards);
+                if (isError(fullHouse) || GetBinaryRankCount(fullHouse) != 2)
                     return -1;
 
                 // Save ranks for performance
@@ -517,18 +513,15 @@ namespace HoldemEvaluator
                 int rankB = GetBinaryRank(fullHouse, 1);
 
                 // Remove card bits of the full house
-                cards &= ~(Masks.RankBitMasks[rankA]);
-                cards &= ~(Masks.RankBitMasks[rankB]);
+                cards &= ~Masks.RankBitMasks[rankA];
+                cards &= ~Masks.RankBitMasks[rankB];
 
                 return O(rankA) - (rankA - rankB) - 1;
             }
 
             // Todo: rename functions
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int O(int c)
-            {
-                return (c * (c + 1)) / 2;
-            }
+            private static int O(int c) => (c * (c + 1)) / 2;
 
             #endregion
 
@@ -540,9 +533,9 @@ namespace HoldemEvaluator
             /// <returns>High card value of the flush. On error -1.</returns>
             private static int GetFlush(ulong cards)
             {
-                for(int s = 0; s < SuitCount; s++) {
+                for (int s = 0; s < SuitCount; s++) {
                     ulong suitedCards = cards & Masks.SuitBitMasks[s];
-                    if(Hand.Bin.GetCardCount(suitedCards) >= 5) {
+                    if (Hand.Bin.GetCardCount(suitedCards) >= 5) {
                         // Flush found
                         return Hand.Bin.GetRankFromBitIndex(Hand.Bin.GetHighestBitIndex(suitedCards));
                     }
@@ -557,9 +550,9 @@ namespace HoldemEvaluator
             /// <returns>Rank of the flush starting from 0 for the lowest possible. On error -1.</returns>
             private static int GetFlushStrength(ulong cards)
             {
-                for(int s = 0; s < SuitCount; s++) {
+                for (int s = 0; s < SuitCount; s++) {
                     ulong suitedCards = cards & Masks.SuitBitMasks[s];
-                    if(Hand.Bin.GetCardCount(suitedCards) >= 5) {
+                    if (Hand.Bin.GetCardCount(suitedCards) >= 5) {
                         // Flush found
                         return GetKickerStrength(suitedCards, 5);
                     }
@@ -577,18 +570,18 @@ namespace HoldemEvaluator
             /// <returns>High card value of the straight. On error -1.</returns>
             private static int GetStraight(ulong cards)
             {
-                foreach(var BitMask in Masks.RankBitMasks.Where(bm => Hand.Bin.GetCardCount(cards & bm) > 0))
+                foreach (var BitMask in Masks.RankBitMasks.Where(bm => Hand.Bin.GetCardCount(cards & bm) > 0))
                     cards |= BitMask;
 
                 var HighCard = cards & (cards >> 4) & (cards >> 8) & (cards >> 12) & (cards >> 16);
-                if(Hand.Bin.GetCardCount(HighCard) == 0) {
+                if (Hand.Bin.GetCardCount(HighCard) == 0) {
                     // Test for a wheel
                     ulong wheelCards = 0UL;
-                    foreach(int f in new int[] { 0, 1, 2, 3, 12 }) {
-                        if(Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[f]) > 0)
+                    foreach (int f in new int[] { 0, 1, 2, 3, 12 }) {
+                        if (Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[f]) > 0)
                             wheelCards |= Masks.RankBitMasks[f];
                     }
-                    if(wheelCards == Masks.WheelBitMasks) {
+                    if (wheelCards == Masks.WheelBitMasks) {
                         // Wheel found
                         return 3;
                     }
@@ -603,10 +596,7 @@ namespace HoldemEvaluator
             /// </summary>
             /// <returns>Rank of the straight starting from 0 for the lowest possible. On error -1.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int GetStraightStrength(ulong cards)
-            {
-                return GetStraight(cards);
-            }
+            private static int GetStraightStrength(ulong cards) => GetStraight(cards);
 
             #endregion
 
@@ -618,9 +608,9 @@ namespace HoldemEvaluator
             /// <returns>Face card value of the three of a kind. On error -1.</returns>
             private static int GetThreeOfAKind(ulong cards)
             {
-                for(int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
+                for (int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
                     // Loop through all ranks and test for three of a kinds
-                    if(Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == 3)
+                    if (Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == 3)
                         return i;
                 }
                 return -1;
@@ -633,8 +623,8 @@ namespace HoldemEvaluator
             /// <returns>Rank of the three of a kind starting from 0 for the lowest possible. On error -1.</returns>
             private static int GetThreeOfAKindStrength(ulong cards)
             {
-                var ThreeOfAKind = GetThreeOfAKind(cards);
-                if(isError(ThreeOfAKind))
+                int ThreeOfAKind = GetThreeOfAKind(cards);
+                if (isError(ThreeOfAKind))
                     return -1;
 
                 // Remove card bits of the three of a kind
@@ -642,7 +632,7 @@ namespace HoldemEvaluator
 
                 int KickerAmt = KickersForHolding[(int)Holdings.ThreeOfAKind];
                 int KickerRank = GetKickerStrength(cards, KickerAmt);
-                if(KickerRank == -1)
+                if (KickerRank == -1)
                     return -1;
                 return ThreeOfAKind * KickerCombos[KickerAmt] + KickerRank;
             }
@@ -659,12 +649,12 @@ namespace HoldemEvaluator
             {
                 int ranks = 0;
                 bool firstPairFound = false;
-                for(int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
+                for (int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
                     // Loop through all ranks and test for a pair,
                     // if one is found the search is continued to find a pair lower than the first one.
                     // In case of a four of a kind no pair is found.
-                    if(Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == 2) {
-                        if(firstPairFound) {
+                    if (Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == 2) {
+                        if (firstPairFound) {
                             ranks = SetBinaryRank(ranks, i, 1);
                             return SetBinaryRankCount(ranks, 2);
                         } else {
@@ -683,8 +673,8 @@ namespace HoldemEvaluator
             /// <returns>Rank of the two pair starting from 0 for the lowest possible. On error -1.</returns>
             private static int GetTwoPairStrength(ulong cards)
             {
-                var twoPair = GetTwoPair(cards);
-                if(isError(twoPair) || GetBinaryRankCount(twoPair) != 2)
+                int twoPair = GetTwoPair(cards);
+                if (isError(twoPair) || GetBinaryRankCount(twoPair) != 2)
                     return -1;
 
                 // Save ranks for performance
@@ -692,13 +682,13 @@ namespace HoldemEvaluator
                 int rankB = GetBinaryRank(twoPair, 1);
 
                 // Remove card bits of the two pair
-                cards &= ~(Masks.RankBitMasks[rankA]);
-                cards &= ~(Masks.RankBitMasks[rankB]);
+                cards &= ~Masks.RankBitMasks[rankA];
+                cards &= ~Masks.RankBitMasks[rankB];
 
                 // Get static kicker info
                 int kickerAmt = KickersForHolding[(int)Holdings.TwoPair];
                 int kickerRank = GetKickerStrength(cards, kickerAmt);
-                if(isError(kickerRank))
+                if (isError(kickerRank))
                     return -1;
 
                 // Calculate the unique strength for this holding 
@@ -717,9 +707,9 @@ namespace HoldemEvaluator
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static int GetPair(ulong cards)
             {
-                for(int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
+                for (int i = Masks.RankBitMasks.Length - 1; i >= 0; i--) {
                     // Loop through all ranks and test for a pair
-                    if(Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == 2)
+                    if (Hand.Bin.GetCardCount(cards & Masks.RankBitMasks[i]) == 2)
                         return i;
                 }
                 return -1;
@@ -732,17 +722,18 @@ namespace HoldemEvaluator
             /// <returns>Rank of the Pair starting from 0 for the lowest possible. On error -1.</returns>
             private static int GetPairStrength(ulong cards)
             {
-                var pair = GetPair(cards);
-                if(isError(pair))
+                int pair = GetPair(cards);
+                if (isError(pair))
                     return -1;
 
                 // Remove card bits of the pair
-                cards &= ~(Masks.RankBitMasks[pair]);
+                cards &= ~Masks.RankBitMasks[pair];
 
                 int kickerAmt = KickersForHolding[(int)Holdings.Pair];
                 int kickerRank = GetKickerStrength(cards, kickerAmt);
-                if(kickerRank == -1)
+                if (kickerRank == -1)
                     return -1;
+
                 return pair * KickerCombos[kickerAmt] + kickerRank;
             }
 
@@ -754,10 +745,7 @@ namespace HoldemEvaluator
             /// </summary>
             /// <returns>Highest card value. On error -1.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int GetHighCard(ulong cards)
-            {
-                return Bin.GetRankFromBitIndex(Bin.GetHighestBitIndex(cards));
-            }
+            private static int GetHighCard(ulong cards) => Bin.GetRankFromBitIndex(Bin.GetHighestBitIndex(cards));
 
             /// <summary>
             /// It will calculate rank of the high card hand.
@@ -765,10 +753,7 @@ namespace HoldemEvaluator
             /// </summary>
             /// <returns>Rank of the high card starting from 0 for the lowest possible. On error -1.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int GetHighCardStrength(ulong cards)
-            {
-                return GetKickerStrength(cards, 5);
-            }
+            private static int GetHighCardStrength(ulong cards) => GetKickerStrength(cards, 5);
             #endregion
 
             #region Kicker
@@ -778,14 +763,14 @@ namespace HoldemEvaluator
             private static int GetKicker(ulong cards, int amount = 1)
             {
 #if DEBUG
-                if(amount < 0)
+                if (amount < 0)
                     throw new ArgumentException("Amount has to be greater than zero", nameof(amount));
 #endif
 
                 int kicker = 0; // Binary data containing all kicker data
                 int kickerAmt = 0; // Counts how many kickers were found
 
-                for(; kickerAmt < amount && Hand.Bin.GetCardCount(cards) != 0; kickerAmt++) {
+                for (; kickerAmt < amount && Hand.Bin.GetCardCount(cards) != 0; kickerAmt++) {
                     // Get next highest rank left in the cards
                     int rank = Bin.GetRankFromBitIndex(Bin.GetHighestBitIndex(cards));
 
@@ -806,28 +791,28 @@ namespace HoldemEvaluator
             /// <param name="amount">The amount of kickers to consider can vary from 0 to 5</param>
             private static int GetKickerStrength(ulong cards, int amount = 5)
             {
-                if(amount < 0)
+                if (amount < 0)
                     return -1;
-                if(amount == 0)
+                if (amount == 0)
                     return 0;
-                if(amount > 5)
+                if (amount > 5)
                     return -1;
 
                 // Get kicker list from cards. (The actual high card is also a kicker)
                 int kickers = GetKicker(cards, amount);
-                if(isError(kickers))
+                if (isError(kickers))
                     return -1;
 
                 int kickerAmt = GetBinaryRankCount(kickers);
-                if(kickerAmt != amount)
+                if (kickerAmt != amount)
                     return -1;
 
-                if(amount == 1)
+                if (amount == 1)
                     return GetBinaryRank(kickers, 0);
 
                 // Convert it into a binary 13-bit format
                 ulong binaryRep = 0UL;
-                for(int i = 0; i < kickerAmt; i++) {
+                for (int i = 0; i < kickerAmt; i++) {
                     binaryRep |= Bin.leftShift1bit(GetBinaryRank(kickers, i));
                 }
 
@@ -839,34 +824,24 @@ namespace HoldemEvaluator
             #region Binary format helper
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static bool isError(int data)
-            {
-                return data == -1;
-            }
+            private static bool isError(int data) =>
+                data == -1;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int GetBinaryRank(int binaryData, int index)
-            {
-                return (binaryData >> (index * 4)) & 0xF;
-            }
+            private static int GetBinaryRank(int binaryData, int index) =>
+                (binaryData >> (index * 4)) & 0xF;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int SetBinaryRank(int binaryData, int rank, int index)
-            {
-                return binaryData | (rank << (index * 4));
-            }
+            private static int SetBinaryRank(int binaryData, int rank, int index) =>
+                binaryData | (rank << (index * 4));
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int GetBinaryRankCount(int binaryData)
-            {
-                return (binaryData >> 28) & 0x7;
-            }
+            private static int GetBinaryRankCount(int binaryData) =>
+                (binaryData >> 28) & 0x7;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int SetBinaryRankCount(int binaryData, int count)
-            {
-                return binaryData | ((count & 0x7) << 28);
-            }
+            private static int SetBinaryRankCount(int binaryData, int count) =>
+                binaryData | ((count & 0x7) << 28);
 
             #endregion
         }

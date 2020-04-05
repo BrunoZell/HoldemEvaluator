@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -27,7 +25,7 @@ namespace HoldemEvaluator
             good = avg win > 1
             */
 
-            class HoleCardStats
+            private class HoleCardStats
             {
                 public HoleCardStats(int index, HoleCards cards)
                 {
@@ -40,32 +38,24 @@ namespace HoldemEvaluator
                 public HoleCards Cards { get; private set; }
                 public int PotsPlayed { get; set; }
                 public int ChipsWon { get; set; }
-                public float AverageWin {
-                    get {
-                        return ChipsWon / (float)PotsPlayed;
-                    }
-                }
-                public bool isGood {
-                    get {
-                        return PotsPlayed == 0 || AverageWin > 1f;
-                    }
-                }
+                public float AverageWin => ChipsWon / (float)PotsPlayed;
+                public bool isGood => PotsPlayed == 0 || AverageWin > 1f;
             };
             public static IEnumerable<HoleCards> GetHandRanking(int playerAmount)
             {
                 // Todo: Hole card ranking
-                if(playerAmount < 2 || playerAmount > 10)
+                if (playerAmount < 2 || playerAmount > 10)
                     throw new NotImplementedException();
 
                 int loops = 1;
                 var allHoleCards = new HashSet<HoleCardStats>(Enum.All(0UL).Select((hc, i) => new HoleCardStats(i, hc)));
 
-                for(int iteration = 0; iteration < 7; iteration++) {
-                    for(int l = 0; l < loops; l++) {
-                        foreach(var h in allHoleCards) {
+                for (int iteration = 0; iteration < 7; iteration++) {
+                    for (int l = 0; l < loops; l++) {
+                        foreach (var h in allHoleCards) {
 
                             int pot = 2;
-                            HashSet<HoleCards> roundHands = new HashSet<HoleCards>();
+                            var roundHands = new HashSet<HoleCards>();
                             var deadCards = (CardCollection)h.Cards;
 
                             var stats_h = allHoleCards.First(cc => cc.Cards == h.Cards);
@@ -78,10 +68,10 @@ namespace HoldemEvaluator
                             deadCards.Include(b.Binary);
                             roundHands.Add(b);
 
-                            for(int x = 0; x < playerAmount - 2; x++) {
+                            for (int x = 0; x < playerAmount - 2; x++) {
                                 var y = HoleCards.Random(deadCards);
                                 var stats = allHoleCards.First(cc => cc.Cards == y);
-                                if(stats.isGood) {
+                                if (stats.isGood) {
                                     deadCards.Include(y.Binary);
                                     roundHands.Add(y);
                                     stats.PotsPlayed++;
@@ -110,10 +100,8 @@ namespace HoldemEvaluator
             /// <param name="holeCards">The hole cards to look for</param>
             /// <param name="playerAmount">The amount of players at the table</param>
             /// <returns>The rank of two specific hole cards in percent</returns>
-            public static float GetHoleCardsRank(HoleCards holeCards, int playerAmount)
-            {
-                return GetHoleCardsRank(holeCards.Binary, playerAmount);
-            }
+            public static float GetHoleCardsRank(HoleCards holeCards, int playerAmount) =>
+                GetHoleCardsRank(holeCards.Binary, playerAmount);
 
             /// <summary>
             /// Returns the rank of two specific hole cards in percent
@@ -127,9 +115,9 @@ namespace HoldemEvaluator
                 ulong[][] orderingSet = GetHandOrdering(playerAmount);
                 float p = 0f; // top %
                 int i = 0; // Currently searched chunks (from the data source)
-                while(i < orderingSet.Length) {
+                while (i < orderingSet.Length) {
                     p += orderingSet[i].Length * pPerCombo;
-                    if(orderingSet[i++].Contains(holeCards))
+                    if (orderingSet[i++].Contains(holeCards))
                         return p;
                 }
                 return 1f;
@@ -141,10 +129,8 @@ namespace HoldemEvaluator
             /// <param name="rank">The rank to search for</param>
             /// <param name="playerAmount">The amount of players at the table</param>
             /// <returns>The hole card combo at a specific rank</returns>
-            public static HoleCards GetHoleCardsFromRank(float rank, int playerAmount)
-            {
-                return new HoleCards(GetHoleCardsFromRankInternal(rank, playerAmount));
-            }
+            public static HoleCards GetHoleCardsFromRank(float rank, int playerAmount) =>
+                new HoleCards(GetHoleCardsFromRankInternal(rank, playerAmount));
 
             /// <summary>
             /// Returns the hole card combo at a specific rank (zero two one)
@@ -158,9 +144,9 @@ namespace HoldemEvaluator
                 ulong[][] orderingSet = GetHandOrdering(playerAmount);
                 int i = 0;
                 int j = 0;
-                while(j < index) {
+                while (j < index) {
                     j += orderingSet[i++].Length;
-                    if(j >= index) {
+                    if (j >= index) {
                         return orderingSet[i - 1][j - index];
                     }
                 }
@@ -175,14 +161,14 @@ namespace HoldemEvaluator
             /// <returns>A list of hole cards groupings with the same value</returns>
             internal static ulong[][] GetHandOrdering(int playerAmount)
             {
-                switch(playerAmount) {
-                case 2:
-                    return EquitySquared;
-                case 6:
-                    return SixHanded;
-                default:
-                    // Todo: Add more hand orderings
-                    throw new NotImplementedException();
+                switch (playerAmount) {
+                    case 2:
+                        return EquitySquared;
+                    case 6:
+                        return SixHanded;
+                    default:
+                        // Todo: Add more hand orderings
+                        throw new NotImplementedException();
                 }
             }
 

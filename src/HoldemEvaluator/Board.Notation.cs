@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace HoldemEvaluator
 {
     public partial class Board
@@ -33,7 +27,7 @@ namespace HoldemEvaluator
                 // Normalize string
                 boardString = HoldemEvaluator.Notation.NormalizeRepresentation(boardString);
 
-                if(!isValidNotation(boardString))
+                if (!isValidNotation(boardString))
                     throw new NotABoardException();
 
                 return new Board(CardCollection.Parse(boardString));
@@ -47,19 +41,15 @@ namespace HoldemEvaluator
             /// Get the notation of a single card
             /// </summary>
             /// <returns>String representation of the card, e.g. "Ac" or "6s"</returns>
-            public static string GetNotation(Board board)
-            {
-                return GetNotation(board._cards.Binary);
-            }
+            public static string GetNotation(Board board) =>
+                GetNotation(board._cards.Binary);
 
             /// <summary>
             /// Get the notation of a single card
             /// </summary>
             /// <returns>String representation of the card, e.g. "Ac" or "6s"</returns>
-            internal static string GetNotation(ulong cards)
-            {
-                return CardCollection.Notation.GetNotation(cards);
-            }
+            internal static string GetNotation(ulong cards) =>
+                CardCollection.Notation.GetNotation(cards);
 
             #endregion
 
@@ -71,10 +61,8 @@ namespace HoldemEvaluator
             /// </summary>
             /// <param name="cardString">The string to validate</param>
             /// <returns>True if the string is valid, false otherwise.</returns>
-            public static bool isValidNotation(string cardString)
-            {
-                return CardCollection.Notation.isValidNotation(cardString);
-            }
+            public static bool isValidNotation(string cardString) =>
+                CardCollection.Notation.IsValidNotation(cardString);
 
             #endregion
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -34,6 +34,7 @@ namespace HoldemEvaluator
             {
                 if(deadCards == 0UL)
                     return _all;
+
                 return _all.Where(hc => (deadCards & (hc.HighCard.Binary | hc.LowCard.Binary)) == 0UL);
             }
 
@@ -46,16 +47,12 @@ namespace HoldemEvaluator
             /// </summary>
             /// <param name="card"></param>
             /// <param name="deadCards">Dead cards. If no dead cards needed leave it null</param>
-            public static IEnumerable<HoleCards> Include(CardCollection includedCards, CardCollection deadCards = null)
-            {
-                return Include((ulong)includedCards, (ulong)deadCards);
-            }
+            public static IEnumerable<HoleCards> Include(CardCollection includedCards, CardCollection deadCards = null) =>
+                Include((ulong)includedCards, (ulong)deadCards);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal static IEnumerable<HoleCards> Include(ulong includedCards, ulong deadCards = 0UL)
-            {
-                return All(deadCards).Where(hc => (includedCards & (hc.HighCard.Binary | hc.LowCard.Binary)) != 0UL);
-            }
+            internal static IEnumerable<HoleCards> Include(ulong includedCards, ulong deadCards = 0UL) =>
+                All(deadCards).Where(hc => (includedCards & (hc.HighCard.Binary | hc.LowCard.Binary)) != 0UL);
 
             #endregion
 
@@ -63,7 +60,7 @@ namespace HoldemEvaluator
 
             #region Bit masks 
 
-            private static readonly ulong[] _allPocketPairs = {
+            private static readonly ulong[] AllPocketPairs = {
                 0x3, // 0011
                 0x5, // 0101
                 0x6, // 0110
@@ -72,7 +69,7 @@ namespace HoldemEvaluator
                 0xC, // 1100
             };
 
-            private static readonly ulong[] _allSingleCards = {
+            private static readonly ulong[] AllSingleCards = {
                 0x1, // 0001
                 0x2, // 0010
                 0x4, // 0100
@@ -103,16 +100,16 @@ namespace HoldemEvaluator
 
                 if(row == col) {
                     // pair
-                    return _allPocketPairs.Select(pp => pp << rankA);
+                    return AllPocketPairs.Select(pp => pp << rankA);
 
                 } else if(row > col) {
                     // offsuit
-                    return _allSingleCards.SelectMany(ocA => _allSingleCards
+                    return AllSingleCards.SelectMany(ocA => AllSingleCards
                                                                  .Where(ocB => ocA != ocB)
                                                                  .Select(ocB => (ocA << rankA) | (ocB << rankB)));
                 } else {
                     // suited
-                    return _allSingleCards.Select(sc => (sc << rankA) | (sc << rankB));
+                    return AllSingleCards.Select(sc => (sc << rankA) | (sc << rankB));
                 }
             }
 
@@ -126,10 +123,8 @@ namespace HoldemEvaluator
             /// <param name="col">Zero based x coordinate in the grid where A is 0</param>
             /// <param name="row">Zero based y coordinate in the grid where A is 0</param>
             /// <returns>All combos represented by that grid cell</returns>
-            public static IEnumerable<HoleCards> GridCell(int col, int row)
-            {
-                return GridCellBinary(col, row).Select(hc => new HoleCards(hc));
-            }
+            public static IEnumerable<HoleCards> GridCell(int col, int row) =>
+                GridCellBinary(col, row).Select(hc => new HoleCards(hc));
 
             #endregion
 
@@ -217,12 +212,7 @@ namespace HoldemEvaluator
                 3377699720527872
             }.Select(pp => new HoleCards(pp)).ToArray();
 
-            public static IEnumerable<HoleCards> PocketPairs {
-                get {
-                    return _pocketPairs;
-                    //return Range.Parse("22+").SelectedHoleCards().Select(p => p.Binary).ToArray();
-                }
-            }
+            public static IEnumerable<HoleCards> PocketPairs => _pocketPairs;
 
             #endregion
 
@@ -422,12 +412,7 @@ namespace HoldemEvaluator
                 18432
             }.Select(pp => new HoleCards(pp)).ToArray();
 
-            public static IEnumerable<HoleCards> BroadWays {
-                get {
-                    return _broadWays;
-                    //return Range.Parse("TT+, AT+, KT+, QT+, JT").SelectedHoleCards().Select(p => p.Binary).ToArray();
-                }
-            }
+            public static IEnumerable<HoleCards> BroadWays => _broadWays;
 
             #endregion
 

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -20,7 +16,7 @@ namespace HoldemEvaluator
             internal static int GetRank(ulong card)
             {
 #if DEBUG
-                if(Hand.Bin.GetCardCount(card) < 1)
+                if (Hand.Bin.GetCardCount(card) < 1)
                     throw new ArgumentException("At least one bit has to be set to represent a card", nameof(card));
 #endif
                 return Hand.Bin.GetRankFromBitIndex(Hand.Bin.GetHighestBitIndex(card));
@@ -32,7 +28,7 @@ namespace HoldemEvaluator
             internal static int GetSuit(ulong card)
             {
 #if DEBUG
-                if(Hand.Bin.GetCardCount(card) < 1)
+                if (Hand.Bin.GetCardCount(card) < 1)
                     throw new ArgumentException("At least one bit has to be set to represent a card", nameof(card));
 #endif
                 return Hand.Bin.GetSuitFromBitIndex(Hand.Bin.GetHighestBitIndex(card));
@@ -42,12 +38,7 @@ namespace HoldemEvaluator
             /// <summary>
             /// Get the binary representation of a specific card
             /// </summary>
-            internal static ulong GetBinary(int rank, int suit)
-            {
-                return binaryCardLUT[rank][suit];
-                // Pre LUT:
-                // return leftShift1bit(GetBitIndex(rank, suit));
-            }
+            internal static ulong GetBinary(int rank, int suit) => binaryCardLUT[rank][suit];
 
             private static readonly ulong[][] binaryCardLUT = {
                 new ulong[]{ 2251799813685248, 1125899906842624, 562949953421312, 281474976710656 },
@@ -73,12 +64,7 @@ namespace HoldemEvaluator
             /// Determines the index of the bit representing that specific rank and suit
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal static byte GetBitIndex(int rank, int suit)
-            {
-                return bitIndexLUT[rank][suit];
-                // Pre LUT:
-                // return (byte)(-suit + Hand.RankCount * Hand.SuitCount - rank * Hand.SuitCount - 1);
-            }
+            internal static byte GetBitIndex(int rank, int suit) => bitIndexLUT[rank][suit];
 
             private static readonly byte[][] bitIndexLUT = {
                 new byte[]{51, 50, 49, 48},

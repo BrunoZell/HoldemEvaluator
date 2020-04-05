@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -32,9 +30,7 @@ namespace HoldemEvaluator
         /// Create a range from a list of hole card combos
         /// </summary>
         public Range(IEnumerable<HoleCards> holeCards) :
-            this(holeCards.Select(hc => hc.Binary))
-        {
-        }
+            this(holeCards.Select(hc => hc.Binary)) { }
 
         /// <summary>
         /// Creates a range with only one specific combo selected.
@@ -62,19 +58,19 @@ namespace HoldemEvaluator
         /// <param name="playerAmount">How many players are at the table. Player amount changes the strength of hole card combos</param>
         public Range(float topPercent, int playerAmount)
         {
-            if(topPercent < 0f || topPercent > 1f)
+            if (topPercent < 0f || topPercent > 1f)
                 throw new ArgumentOutOfRangeException(nameof(topPercent), topPercent, "Only percentages between zero and one are supported");
 
             _holeCards = new HashSet<ulong>();
 
-            var orderingSet = HoleCards.Ranking.GetHandOrdering(playerAmount);
+            ulong[][] orderingSet = HoleCards.Ranking.GetHandOrdering(playerAmount);
 
             float pPerCombo = 1f / 1326f; // The percent added per combo. Since there are 1326 total hole card combinations its 1 over 1326
             float p = 0f; // Currently added percent
             int i = 0; // Currently added chunks (from the data source)
-            while(i < orderingSet.Length) {
+            while (i < orderingSet.Length) {
                 p += pPerCombo * orderingSet[i].Length;
-                if(p > topPercent)
+                if (p > topPercent)
                     return;
                 _holeCards.UnionWith(orderingSet[i++]);
             }
@@ -98,7 +94,7 @@ namespace HoldemEvaluator
             // Handle inner collections (resize to Hand.FaceCount (13))
             for (int i = 0; i < gridData.Length; i++) {
                 if (gridData[i] != null && gridData[i].Length != 0) {
-                    var cellValues = gridData[i].Take(Hand.RankCount).ToArray();
+                    bool[] cellValues = gridData[i].Take(Hand.RankCount).ToArray();
                     for (int j = 0; j < cellValues.Length; j++) {
                         if (cellValues[j])
                             this[i, j] = true;
@@ -135,46 +131,36 @@ namespace HoldemEvaluator
         /// <param name="rangeString">String representing a range. E.g. "AK JJ+ A5s-ATs"</param>
         /// <returns>A Range representing the input</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Range Parse(string rangeString)
-        {
-            return Notation.Parse(rangeString);
-        }
+        public static Range Parse(string rangeString) =>
+            Notation.Parse(rangeString);
 
         #endregion
 
         /// <summary>
         /// Collection of all selected hole cards. Each entry has two bits set.
         /// </summary>
-        private HashSet<ulong> _holeCards;
+        private readonly HashSet<ulong> _holeCards;
 
         /// <summary>
         /// Adds a collection of hole cards to the range
         /// </summary>
         /// <param name="holeCards"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void AddHoldeCards(IEnumerable<ulong> holeCards)
-        {
+        internal void AddHoldeCards(IEnumerable<ulong> holeCards) =>
             _holeCards.UnionWith(holeCards);
-        }
 
         /// <summary>
         /// Adds a collection of hole cards to the range
         /// </summary>
         /// <param name="holeCards"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddHoldeCards(IEnumerable<HoleCards> holeCards)
-        {
+        public void AddHoldeCards(IEnumerable<HoleCards> holeCards) =>
             _holeCards.UnionWith(holeCards.Select(hc => hc.Binary));
-        }
 
         /// <summary>
         /// The percentage of all possible hole cards included in this range
         /// </summary>
-        public float Percentage {
-            get {
-                return _holeCards.Count / 1326f; // There are 1326 total hand combos
-            }
-        }
+        public float Percentage => _holeCards.Count / 1326f; // There are 1326 total hand combos
 
         #region Suit filters
 
@@ -219,10 +205,8 @@ namespace HoldemEvaluator
         /// <summary>
         /// Generates the bit flag for a suit combo from two suits
         /// </summary>
-        public static SuitCombos GetSuitCombo(int highCardSuit, int lowCardSuit)
-        {
-            return (SuitCombos)(1 << (highCardSuit * 4 + lowCardSuit));
-        }
+        public static SuitCombos GetSuitCombo(int highCardSuit, int lowCardSuit) =>
+            (SuitCombos)(1 << (highCardSuit * 4 + lowCardSuit));
 
         /// <summary>
         /// Filters this range by specific valid suit groups and includes
@@ -255,14 +239,14 @@ namespace HoldemEvaluator
         /// </summary>
         public bool[,] GetGridData()
         {
-            var grid = new bool[Hand.RankCount, Hand.RankCount];
+            bool[,] grid = new bool[Hand.RankCount, Hand.RankCount];
 
             for (int col = 0; col < Hand.RankCount; col++) {
                 for (int row = 0; row < Hand.RankCount; row++) {
                     grid[col, row] = this[col, row, true];
                 }
             }
-            
+
             return grid;
         }
 
@@ -314,20 +298,12 @@ namespace HoldemEvaluator
         /// <summary>
         /// Iterates over all hole card combinations included in this range
         /// </summary>
-        internal IEnumerable<ulong> SelectedHoleCardBinaries {
-            get {
-                return _holeCards;
-            }
-        }
+        internal IEnumerable<ulong> SelectedHoleCardBinaries => _holeCards;
 
         /// <summary>
         /// Iterates over all hole card combinations included in this range
         /// </summary>
-        public IEnumerable<HoleCards> SelectedHoleCards {
-            get {
-                return _holeCards.Select(hc => new HoleCards(hc));
-            }
-        }
+        public IEnumerable<HoleCards> SelectedHoleCards => _holeCards.Select(hc => new HoleCards(hc));
         #endregion
 
         #region this accessors
@@ -337,12 +313,8 @@ namespace HoldemEvaluator
         /// </summary>
         /// <param name="rangeNotation">A string representation of the range to test</param>
         public bool this[string rangeNotation] {
-            get {
-                return this[Notation.Parse(rangeNotation)];
-            }
-            set {
-                this[Notation.Parse(rangeNotation)] = value;
-            }
+            get => this[Notation.Parse(rangeNotation)];
+            set => this[Notation.Parse(rangeNotation)] = value;
         }
 
         /// <summary>
@@ -350,12 +322,9 @@ namespace HoldemEvaluator
         /// </summary>
         /// <param name="range">The range to test</param>
         public bool this[Range range] {
-            get {
-                return range.SelectedHoleCardBinaries
-                    .All(hc => _holeCards.Contains(hc));
-            }
+            get => range.SelectedHoleCardBinaries.All(hc => _holeCards.Contains(hc));
             set {
-                foreach(ulong holeCard in range.SelectedHoleCardBinaries) {
+                foreach (ulong holeCard in range.SelectedHoleCardBinaries) {
                     this[holeCard] = value;
                 }
             }
@@ -366,12 +335,8 @@ namespace HoldemEvaluator
         /// </summary>
         /// <param name="holeCards">The hole cards to test</param>
         public bool this[HoleCards holeCards] {
-            get {
-                return this[holeCards.Binary];
-            }
-            set {
-                this[holeCards.Binary] = value;
-            }
+            get => this[holeCards.Binary];
+            set => this[holeCards.Binary] = value;
         }
 
         /// <summary>
@@ -379,18 +344,16 @@ namespace HoldemEvaluator
         /// </summary>
         /// <param name="holeCards">The hole cards to test in a binary format</param>
         internal bool this[ulong holeCards] {
-            get {
-                return _holeCards.Contains(holeCards);
-            }
+            get => _holeCards.Contains(holeCards);
             set {
-                if(value) {
+                if (value) {
                     // set to true
-                    if(!_holeCards.Contains(holeCards)) {
+                    if (!_holeCards.Contains(holeCards)) {
                         _holeCards.Add(holeCards);
                     }
                 } else {
                     // set to false
-                    if(_holeCards.Contains(holeCards)) {
+                    if (_holeCards.Contains(holeCards)) {
                         _holeCards.Remove(holeCards);
                     }
                 }
@@ -412,11 +375,12 @@ namespace HoldemEvaluator
                     return HoleCards.Enum.GridCellBinary(col, row)
                         .Any(hc => _holeCards.Contains(hc));
                 }
+
                 return HoleCards.Enum.GridCellBinary(col, row)
                     .All(hc => _holeCards.Contains(hc));
             }
             set {
-                foreach(ulong holeCards in HoleCards.Enum.GridCellBinary(col, row)) {
+                foreach (ulong holeCards in HoleCards.Enum.GridCellBinary(col, row)) {
                     this[holeCards] = value;
                 }
             }
@@ -429,11 +393,10 @@ namespace HoldemEvaluator
             if (!(obj is Range r)) {
                 return false;
             }
+
             return SelectedHoleCardBinaries.OrderBy(b => b).SequenceEqual(r.SelectedHoleCardBinaries.OrderBy(b => b));
         }
 
-        public override int GetHashCode() {
-            return -649190805 + EqualityComparer<HashSet<ulong>>.Default.GetHashCode(_holeCards);
-        }
+        public override int GetHashCode() => -649190805 + EqualityComparer<HashSet<ulong>>.Default.GetHashCode(_holeCards);
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -22,9 +19,9 @@ namespace HoldemEvaluator
         /// </summary>
         public HoleCards(Card card1, Card card2)
         {
-            if(card1 == null)
+            if (card1 == null)
                 throw new ArgumentNullException(nameof(card1));
-            if(card2 == null)
+            if (card2 == null)
                 throw new ArgumentNullException(nameof(card2));
 
             Binary = card1.Binary | card2.Binary;
@@ -36,7 +33,7 @@ namespace HoldemEvaluator
         /// <param name="cards">Exactly two of the first 52 bits have to be true representing the cards.</param>
         internal HoleCards(ulong cards)
         {
-            if(Hand.Bin.GetCardCount(cards) != 2)
+            if (Hand.Bin.GetCardCount(cards) != 2)
                 throw new ArgumentException("Only two cards allowed as hole cards", nameof(cards));
 
             Binary = cards;
@@ -59,7 +56,7 @@ namespace HoldemEvaluator
         /// <returns>New random hole cards</returns>
         public static HoleCards Random(CardCollection excludedCards = null)
         {
-            if(excludedCards != null && excludedCards.Count + 2 > Hand.TotalCards)
+            if (excludedCards != null && excludedCards.Count + 2 > Hand.TotalCards)
                 throw new ArgumentException("Not enough cards left after excluding cards", nameof(excludedCards));
 
             return new HoleCards(CardCollection.RandomAsUlong(2, excludedCards));
@@ -86,13 +83,13 @@ namespace HoldemEvaluator
         /// <returns>A list of random hole cards</returns>
         public static IEnumerable<HoleCards> RandomList(int holeCardAmount, CardCollection excludedCards = null)
         {
-            if(excludedCards != null && excludedCards.Count + holeCardAmount * 2 > Hand.TotalCards)
+            if (excludedCards != null && excludedCards.Count + holeCardAmount * 2 > Hand.TotalCards)
                 throw new ArgumentException("Not enough cards left after excluding cards", nameof(excludedCards));
 
-            if(excludedCards == null)
+            if (excludedCards == null)
                 excludedCards = new CardCollection();
 
-            for(int i = 0; i < holeCardAmount; i++) {
+            for (int i = 0; i < holeCardAmount; i++) {
                 var newHoleCards = Random(excludedCards);
                 yield return newHoleCards;
                 excludedCards.Include(newHoleCards.Binary);
@@ -111,7 +108,7 @@ namespace HoldemEvaluator
         /// </summary>
         public bool IsSuited {
             get {
-                var suits = CardCollection.Bin.GetAllSuits(Binary);
+                int[] suits = CardCollection.Bin.GetAllSuits(Binary);
                 return suits[0] == suits[1];
             }
         }
@@ -121,7 +118,7 @@ namespace HoldemEvaluator
         /// </summary>
         public bool IsPocketPair {
             get {
-                var ranks = CardCollection.Bin.GetAllRanks(Binary);
+                int[] ranks = CardCollection.Bin.GetAllRanks(Binary);
                 return ranks[0] == ranks[1];
             }
         }
@@ -129,60 +126,33 @@ namespace HoldemEvaluator
         /// <summary>
         /// Rank of the higher card (the higher the better)
         /// </summary>
-        public Card HighCard {
-            get {
-                return CardCollection.Bin.GetAllCards(Binary).Max();
-            }
-        }
+        public Card HighCard => CardCollection.Bin.GetAllCards(Binary).Max();
 
         /// <summary>
         /// Rank of the lower card (the higher the better)
         /// </summary>
-        public Card LowCard {
-            get {
-                return CardCollection.Bin.GetAllCards(Binary).Min();
-            }
-        }
+        public Card LowCard => CardCollection.Bin.GetAllCards(Binary).Min();
 
         #region Native overloads
 
-        public static bool operator ==(HoleCards obj1, HoleCards obj2)
-        {
-            return obj1.Binary == obj2.Binary;
-        }
-
-        public static bool operator !=(HoleCards obj1, HoleCards obj2)
-        {
-            return obj1.Binary != obj2.Binary;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is HoleCards && ((HoleCards)obj).Binary == Binary;
-        }
-
-        public override int GetHashCode()
-        {
-            return Binary.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return Notation.GetNotation(Binary);
-        }
+        public static bool operator ==(HoleCards obj1, HoleCards obj2) => obj1.Binary == obj2.Binary;
+        public static bool operator !=(HoleCards obj1, HoleCards obj2) => obj1.Binary != obj2.Binary;
+        public override bool Equals(object obj) => obj is HoleCards && ((HoleCards)obj).Binary == Binary;
+        public override int GetHashCode() => Binary.GetHashCode();
+        public override string ToString() => Notation.GetNotation(Binary);
 
         /// <summary>
         /// Create a card collection with all cards included. No error is thrown on duplicated cards.
         /// </summary>
         public static CardCollection operator |(HoleCards holeCards1, HoleCards holeCards2)
         {
-            if(holeCards1 != null && holeCards2 != null)
+            if (holeCards1 != null && holeCards2 != null)
                 return new CardCollection(holeCards1.Binary | holeCards2.Binary);
 
-            if(holeCards1 == null && holeCards2 != null)
+            if (holeCards1 == null && holeCards2 != null)
                 return new CardCollection(holeCards2.Binary);
 
-            if(holeCards1 != null && holeCards2 == null)
+            if (holeCards1 != null && holeCards2 == null)
                 return new CardCollection(holeCards1.Binary);
 
             return new CardCollection();
@@ -192,20 +162,11 @@ namespace HoldemEvaluator
 
         #region Type conversion
 
-        public static implicit operator ulong(HoleCards holeCards)
-        {
-            return holeCards.Binary;
-        }
+        public static implicit operator ulong(HoleCards holeCards) => holeCards.Binary;
 
-        public static implicit operator HoleCards(ulong binary)
-        {
-            return new HoleCards(binary);
-        }
+        public static implicit operator HoleCards(ulong binary) => new HoleCards(binary);
 
-        public static explicit operator CardCollection(HoleCards holeCards)
-        {
-            return new CardCollection(holeCards.Binary);
-        }
+        public static explicit operator CardCollection(HoleCards holeCards) => new CardCollection(holeCards.Binary);
 
         #endregion
     }

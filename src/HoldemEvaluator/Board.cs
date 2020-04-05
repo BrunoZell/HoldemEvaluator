@@ -1,11 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -33,7 +31,7 @@ namespace HoldemEvaluator
         public Board(CardCollection collection)
         {
 #if DEBUG
-            if(!System.Enum.GetValues(typeof(Progression)).Cast<int>().Contains(collection.Count))
+            if (!System.Enum.GetValues(typeof(Progression)).Cast<int>().Contains(collection.Count))
                 throw new ArgumentException("The collection must hold either 0, 3, 4 or 5 cards that represent the board", nameof(collection));
 #endif
 
@@ -49,7 +47,7 @@ namespace HoldemEvaluator
             _cards = collection;
 #if DEBUG
             // Low performance
-            if(!System.Enum.GetValues(typeof(Progression)).Cast<int>().Contains(_cards.Count))
+            if (!System.Enum.GetValues(typeof(Progression)).Cast<int>().Contains(_cards.Count))
                 throw new ArgumentException("The collection must hold either 0, 3, 4 or 5 cards that represent the board", nameof(collection));
 #endif
         }
@@ -59,7 +57,7 @@ namespace HoldemEvaluator
         /// </summary>
         public Board(Board board)
         {
-            if(board != null)
+            if (board != null)
                 _cards = new CardCollection(board._cards);
         }
 
@@ -121,10 +119,10 @@ namespace HoldemEvaluator
         internal static EvaluationResults Evaluate(ulong board, params ulong[] holeCards)
         {
 #if DEBUG
-            if(holeCards.Any(hc => (board & hc) != 0UL))
+            if (holeCards.Any(hc => (board & hc) != 0UL))
                 throw new ArgumentException("All hole cards of the players should not be contained in the board", nameof(holeCards));
 
-            if(Hand.Bin.GetCardCount(board) != (int)Progression.River)
+            if (Hand.Bin.GetCardCount(board) != (int)Progression.River)
                 throw new NashException("Evaluation only on completed boards allowed. For an approximation use the appropriate method.");
 #endif
             return new EvaluationResults(GetPlayerEvalResults(board, holeCards));
@@ -145,7 +143,7 @@ namespace HoldemEvaluator
                 allHoleCards |= holeCards[i];
             }
 #endif
-            for(int i = 0; i < holeCards.Length; i++) {
+            for (int i = 0; i < holeCards.Length; i++) {
                 ulong boardCards = board | holeCards[i];
                 // Todo: add hand description (with good performance). Could be optional to save time if not needed
                 yield return new EvaluationResults.PlayerResults(i, /*Hand.Eval.GetHoldingType(boardCards)*/0, Hand.Eval.GetHandStrength(boardCards), holeCards[i]);
@@ -158,10 +156,8 @@ namespace HoldemEvaluator
         /// <param name="holeCards">The list of hole cards to evaluate the equity for</param>
         /// <returns>A list of player approximation results</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ApproximationResults Approximate(params HoleCards[] holeCards)
-        {
-            return Approximate(Array.ConvertAll(holeCards, hc => (ulong)hc));
-        }
+        public ApproximationResults Approximate(params HoleCards[] holeCards) =>
+            Approximate(Array.ConvertAll(holeCards, hc => (ulong)hc));
 
         /// <summary>
         /// Calculates equity for two or more hole cards on the board by checking a few random outcomes. No splits considered
@@ -169,10 +165,8 @@ namespace HoldemEvaluator
         /// <param name="holeCards">The list of hole cards to evaluate the equity for</param>
         /// <returns>A list of player approximation results</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ApproximationResults Approximate(CardCollection deadCards, params HoleCards[] holeCards)
-        {
-            return Approximate(Array.ConvertAll(holeCards, hc => (ulong)hc), deadCards);
-        }
+        public ApproximationResults Approximate(CardCollection deadCards, params HoleCards[] holeCards) =>
+            Approximate(Array.ConvertAll(holeCards, hc => (ulong)hc), deadCards);
 
 
         public ApproximationResults Approximate(CardCollection deadCards, params Range[] ranges)
@@ -185,9 +179,9 @@ namespace HoldemEvaluator
 
             var players = new List<float>(new float[ranges.Length]);
             float splitProb = 0f;
-            foreach(var approx in allApprox) {
+            foreach (var approx in allApprox) {
                 splitProb += approx.SplitProbability;
-                for(int p = 0; p < ranges.Length; p++) {
+                for (int p = 0; p < ranges.Length; p++) {
                     players[p] += approx[p].Equity;
                 }
             }
@@ -205,10 +199,10 @@ namespace HoldemEvaluator
             cancellationToken?.ThrowIfCancellationRequested();
 
 
-            var localHoleCards = new ulong[nativeRanges.Count];
+            ulong[]? localHoleCards = new ulong[nativeRanges.Count];
             ulong allLocalHoleCards;
 
-            var totalEquity = new float[nativeRanges.Count];
+            float[]? totalEquity = new float[nativeRanges.Count];
             float splitEquity = 0f;
 
             int firstSelectedPlayer = 0;
@@ -276,25 +270,25 @@ namespace HoldemEvaluator
         {
             int appoxAmt = trials ?? 8000 * holeCards.Length;
             // If there are less possible outcomes than we want to test we calculate just those.
-            if(appoxAmt > CardCollection.Enum.CombinationCount(Hand.TotalCards - (deadCardsCount ?? Hand.Bin.GetCardCount(deadCards)) - _cards.Count, (int)Progression.River - _cards.Count)) {
+            if (appoxAmt > CardCollection.Enum.CombinationCount(Hand.TotalCards - (deadCardsCount ?? Hand.Bin.GetCardCount(deadCards)) - _cards.Count, (int)Progression.River - _cards.Count)) {
                 return ApproximateExact(deadCards, holeCards);
             }
 
             // include hole cards into dead cards
             Array.ForEach(holeCards, hc => deadCards |= hc);
 
-            var winnings = new int[holeCards.Length];
+            int[]? winnings = new int[holeCards.Length];
             int splits = 0;
             var board = new Board(_cards);
-            for(int i = 0; i < appoxAmt; i++) {
+            for (int i = 0; i < appoxAmt; i++) {
                 // Create a virtual board
                 board._cards.Binary = _cards.Binary;
-                if(board.Progress != Progression.River) {
+                if (board.Progress != Progression.River) {
                     // deal random cards to the river
                     board.DealRandomCards(Progression.River, deadCards);
                 }
                 var eval = board.Evaluate(holeCards);
-                if(eval.IsSplit) {
+                if (eval.IsSplit) {
                     splits++;
                 } else {
                     winnings[eval.Winner.Position]++;
@@ -309,30 +303,26 @@ namespace HoldemEvaluator
         /// <param name="holeCards">The list of hole cards to evaluate the equity for</param>
         /// <returns>A list of player approximation results</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ApproximationResults ApproximateExact(params HoleCards[] holeCards)
-        {
-            return ApproximateExact(0UL, Array.ConvertAll(holeCards, hc => (ulong)hc));
-        }
+        public ApproximationResults ApproximateExact(params HoleCards[] holeCards) =>
+            ApproximateExact(0UL, Array.ConvertAll(holeCards, hc => (ulong)hc));
 
         /// <summary>
         /// Calculates equity for two or more hole cards on the board by checking all possible outcomes. No splits considered
         /// </summary>
         /// <param name="holeCards">The list of hole cards to evaluate the equity for</param>
         /// <returns>A list of player approximation results</returns>
-        public ApproximationResults ApproximateExact(CardCollection deadCards, params HoleCards[] holeCards)
-        {
-            return ApproximateExact(deadCards, Array.ConvertAll(holeCards, hc => (ulong)hc));
-        }
+        public ApproximationResults ApproximateExact(CardCollection deadCards, params HoleCards[] holeCards) =>
+            ApproximateExact(deadCards, Array.ConvertAll(holeCards, hc => (ulong)hc));
 
         internal ApproximationResults ApproximateExact(ulong deadCards, params ulong[] holeCards)
         {
-            var winnings = new int[holeCards.Length];
+            int[]? winnings = new int[holeCards.Length];
             int splits = 0;
 
-            if(Progress == Progression.River) {
+            if (Progress == Progression.River) {
                 // Only one board possible, because all five cards are given
                 var eval = Evaluate(holeCards);
-                if(eval.IsSplit) {
+                if (eval.IsSplit) {
                     splits++;
                 } else {
                     winnings[eval.Winner.Position]++;
@@ -346,7 +336,7 @@ namespace HoldemEvaluator
                 var boards = Enum.Include((int)Progression.River, _cards.Binary, deadCards).ToList();
                 //Parallel.ForEach(boards, (board) => winnings[Evaluate(board, holeCards).Winner.Position]++);
 
-                foreach(ulong board in boards) {
+                foreach (ulong board in boards) {
                     var eval = Evaluate(board, holeCards);
                     if (eval.IsSplit) {
                         splits++;
@@ -368,7 +358,7 @@ namespace HoldemEvaluator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DealRandomCards(Progression targetState, CardCollection deadCards = null)
         {
-            if(Progress >= targetState)
+            if (Progress >= targetState)
                 return;
 
             DealRandomCards(targetState, (ulong)deadCards);
@@ -384,48 +374,37 @@ namespace HoldemEvaluator
 
         public static bool operator ==(Board board1, Board board2)
         {
-            if(ReferenceEquals(board1, null)) {
+            if (ReferenceEquals(board1, null)) {
                 return ReferenceEquals(board2, null);
             }
+
             return board1.Equals(board2);
         }
 
         public static bool operator !=(Board board1, Board board2)
         {
-            if(ReferenceEquals(board1, null)) {
+            if (ReferenceEquals(board1, null)) {
                 return !ReferenceEquals(board2, null);
             }
+
             return !board1.Equals(board2);
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj != null && obj is Board && ((Board)obj)._cards == _cards;
-        }
+        public override bool Equals(object obj) =>
+               obj != null
+            && obj is Board && ((Board)obj)._cards == _cards;
 
-        public override int GetHashCode()
-        {
-            return _cards.GetHashCode();
-        }
+        public override int GetHashCode() => _cards.GetHashCode();
 
-        public override string ToString()
-        {
-            return Notation.GetNotation(this);
-        }
+        public override string ToString() => Notation.GetNotation(this);
 
         #endregion
 
         #region IEnumerable
 
-        public IEnumerator<Card> GetEnumerator()
-        {
-            return _cards.GetEnumerator();
-        }
+        public IEnumerator<Card> GetEnumerator() => _cards.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _cards.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => _cards.GetEnumerator();
 
         #endregion
     }

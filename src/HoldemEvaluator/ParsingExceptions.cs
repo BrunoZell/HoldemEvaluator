@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace HoldemEvaluator
 {
@@ -33,11 +29,7 @@ namespace HoldemEvaluator
         /// Exception.Message is overwritten by this to enable a standard error message by class.
         /// This Property returns the message passed in the constructor of the exception. If no error message was passed it will return a standard error message defined in each individual NashException class.
         /// </summary>
-        public new string Message {
-            get {
-                return string.IsNullOrEmpty(_message) ? _standardMessage : _message;
-            }
-        }
+        new public string Message => String.IsNullOrEmpty(_message) ? _standardMessage : _message;
     }
 
     public class ParsingException : NashException

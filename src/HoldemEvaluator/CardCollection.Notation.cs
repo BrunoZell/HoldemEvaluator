@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,7 +36,7 @@ namespace HoldemEvaluator
             public static CardCollection Parse(string collectionString)
             {
                 // Hand contains either invalid strings or duplicate entries
-                if(!isValidNotation(collectionString))
+                if(!IsValidNotation(collectionString))
                     throw new NotACollectionException();
 
                 // Normalize string
@@ -107,11 +107,12 @@ namespace HoldemEvaluator
             /// </summary>
             /// <param name="collectionString">The string to validate</param>
             /// <returns>True if the string is valid, false otherwise.</returns>
-            public static bool isValidNotation(string collectionString)
+            public static bool IsValidNotation(string collectionString)
             {
                 if(collectionString == null)
                     return false;
-                if(collectionString == String.Empty)
+
+                if(collectionString.Length == 0)
                     return true;
 
                 // Normalize the string representation

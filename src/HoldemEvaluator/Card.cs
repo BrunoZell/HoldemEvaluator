@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System;
 
 namespace HoldemEvaluator
 {
@@ -48,7 +42,7 @@ namespace HoldemEvaluator
         /// </summary>
         public int Suit {
             get {
-                if(_suit < 0)
+                if (_suit < 0)
                     _suit = Bin.GetSuit(Binary);
                 return _suit;
             }
@@ -60,7 +54,7 @@ namespace HoldemEvaluator
         /// </summary>
         public int Rank {
             get {
-                if(_rank < 0)
+                if (_rank < 0)
                     _rank = Bin.GetRank(Binary);
                 return _rank;
             }
@@ -69,90 +63,55 @@ namespace HoldemEvaluator
 
         #region Native overloads
 
-        public static bool operator ==(Card card1, Card card2)
-        {
-            return card1.Binary == card2.Binary;
-        }
-
-        public static bool operator !=(Card card1, Card card2)
-        {
-            return card1.Binary != card2.Binary;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Card && ((Card)obj).Binary == Binary;
-        }
+        public static bool operator ==(Card card1, Card card2) => card1.Binary == card2.Binary;
+        public static bool operator !=(Card card1, Card card2) => card1.Binary != card2.Binary;
+        public override bool Equals(object obj) => obj is Card && ((Card)obj).Binary == Binary;
 
         public int CompareTo(Card card)
         {
-            if(Binary == card.Binary) {
+            if (Binary == card.Binary) {
                 return 0;
-            } else if(Binary > card.Binary) { // The larger the binary the lesser the card value
+            } else if (Binary > card.Binary) { // The larger the binary the lesser the card value
                 return -1;
             } else {
                 return 1;
             }
         }
 
-        public static bool operator <(Card card1, Card card2)
-        {
-            return card1.CompareTo(card2) < 0;
-        }
-
-        public static bool operator >(Card card1, Card card2)
-        {
-            return card1.CompareTo(card2) > 0;
-        }
-
-        public override int GetHashCode()
-        {
-            return (int)Binary + (int)(Binary >> 32);
-        }
+        public static bool operator <(Card card1, Card card2) => card1.CompareTo(card2) < 0;
+        public static bool operator >(Card card1, Card card2) => card1.CompareTo(card2) > 0;
+        public override int GetHashCode() => (int)Binary + (int)(Binary >> 32);
 
         /// <summary>
         /// Create hole cards with both cards included
         /// </summary>
-        public static HoleCards operator &(Card card1, Card card2)
-        {
-            return new HoleCards(card1.Binary | card2.Binary);
-        }
+        public static HoleCards operator &(Card card1, Card card2) => new HoleCards(card1.Binary | card2.Binary);
 
         /// <summary>
         /// Create a card collection with both cards included
         /// </summary>
         public static CardCollection operator |(Card card1, Card card2)
         {
-            if(card1 != null && card2 != null)
+            if (card1 != null && card2 != null)
                 return new CardCollection(card1.Binary | card2.Binary);
 
-            if(card1 == null && card2 != null)
+            if (card1 == null && card2 != null)
                 return new CardCollection(card2.Binary);
 
-            if(card1 != null && card2 == null)
+            if (card1 != null && card2 == null)
                 return new CardCollection(card1.Binary);
 
             return new CardCollection();
         }
 
-        public override string ToString()
-        {
-            return Notation.GetNotation(Binary);
-        }
+        public override string ToString() => Notation.GetNotation(Binary);
 
         #endregion
 
         #region Type conversion
 
-        public static implicit operator ulong(Card card)
-        {
-            return card.Binary;
-        }
-
-        public static implicit operator Card(ulong binary)
-        {
-            return new Card(binary);
-        }
+        public static implicit operator ulong(Card card) => card.Binary;
+        public static implicit operator Card(ulong binary) => new Card(binary);
 
         #endregion
     }

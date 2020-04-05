@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -38,7 +36,7 @@ namespace HoldemEvaluator
             /// <returns>Integer from 0 to 168</returns>
             private static int GetIndex(string hand)
             {
-                if(hand == null || !HandGrid.Contains(NormalizeHandString(hand)))
+                if (hand == null || !HandGrid.Contains(NormalizeHandString(hand)))
                     throw new ArgumentOutOfRangeException(nameof(hand), hand, $"Not a valid hole card combination");
                 return Array.IndexOf(HandGrid, NormalizeHandString(hand));
             }
@@ -52,9 +50,9 @@ namespace HoldemEvaluator
             /// <returns>The string representation of the corresponding hand</returns>
             public static string GetNotation(int column, int row)
             {
-                if(column < 0 || column > RankCount - 1)
+                if (column < 0 || column > RankCount - 1)
                     throw new ArgumentOutOfRangeException(nameof(column), column, $"{nameof(column)} can't be greater than {RankCount - 1} or less than zero");
-                if(row < 0 || row > RankCount - 1)
+                if (row < 0 || row > RankCount - 1)
                     throw new ArgumentOutOfRangeException(nameof(row), row, $"{nameof(row)} can't be greater than {RankCount - 1} or less than zero");
 
                 return HandGrid[row * RankCount + column];
@@ -80,18 +78,18 @@ namespace HoldemEvaluator
             /// <returns>The formatted string (e.g. "AKs", "AKo", "JJ")</returns>
             private static string NormalizeHandString(string handString)
             {
-                if(!Regex.IsMatch(handString, Range.Notation.HandRegex, RegexOptions.IgnoreCase))
+                if (!Regex.IsMatch(handString, Range.Notation.HandRegex, RegexOptions.IgnoreCase))
                     throw new ArgumentOutOfRangeException(nameof(handString), handString, $"Hole card string must match the regex \"{ Range.Notation.HandRegex }\"");
 
                 // Only the two chars for the ranks
                 string cardSubString = handString.Substring(0, 2).ToUpper(CultureInfo.InvariantCulture);
-                if(Notation.ParseRank(handString[0]) < Notation.ParseRank(handString[1])) {
+                if (Notation.ParseRank(handString[0]) < Notation.ParseRank(handString[1])) {
                     // swap ranks if the second one is ranked higher
                     cardSubString = new string(cardSubString.Reverse().ToArray());
                 }
 
                 // If necessary add the suit back
-                if(handString.Length == 3)
+                if (handString.Length == 3)
                     return cardSubString + Char.ToLower(handString[2], CultureInfo.InvariantCulture);
                 return cardSubString;
             }
@@ -102,7 +100,7 @@ namespace HoldemEvaluator
             /// <returns>True, of parameter "hand" represents a pocket pair, false otherwise</returns>
             public static bool isPocketPair(string handString)
             {
-                if(handString == null)
+                if (handString == null)
                     throw new ArgumentNullException(nameof(handString));
 
                 return Regex.IsMatch(handString, Range.Notation.HandRegex, RegexOptions.IgnoreCase) &&
@@ -115,9 +113,9 @@ namespace HoldemEvaluator
             /// <returns>A sequential list of all possible hole cards (in format like "AKs" or "JJ"), starting with the top row continuously flowed by the rows behind.</returns>
             private static IEnumerable<string> GenerateHandGrid()
             {
-                for(int col = RankCount - 1; col >= 0; col--) {
-                    for(int row = RankCount - 1; row >= 0; row--) {
-                        if(col == row) {
+                for (int col = RankCount - 1; col >= 0; col--) {
+                    for (int row = RankCount - 1; row >= 0; row--) {
+                        if (col == row) {
                             yield return String.Format(CultureInfo.InvariantCulture, "{0}{0}", Notation.Ranks[col]);
                             continue;
                         }

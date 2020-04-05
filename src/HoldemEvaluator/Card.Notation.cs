@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -34,7 +30,7 @@ namespace HoldemEvaluator
                 // Normalize string
                 cardString = HoldemEvaluator.Notation.NormalizeRepresentation(cardString);
 
-                if(!isValidNotation(cardString))
+                if (!isValidNotation(cardString))
                     throw new NotACardException();
 
                 return new Card(HoldemEvaluator.Notation.ParseRank(cardString[0]), HoldemEvaluator.Notation.ParseSuit(cardString[1]));
@@ -48,28 +44,22 @@ namespace HoldemEvaluator
             /// Get the notation of a single card
             /// </summary>
             /// <returns>String representation of the card, e.g. "Ac" or "6s"</returns>
-            public static string GetNotation(Card card)
-            {
-                return GetNotation(card.Rank, card.Suit);
-            }
+            public static string GetNotation(Card card) =>
+                GetNotation(card.Rank, card.Suit);
 
             /// <summary>
             /// Get the notation of a single card
             /// </summary>
             /// <returns>String representation of the card, e.g. "Ac" or "6s"</returns>
-            public static string GetNotation(int rank, int suit)
-            {
-                return String.Concat(HoldemEvaluator.Notation.Ranks[rank], HoldemEvaluator.Notation.Suits[suit]);
-            }
+            public static string GetNotation(int rank, int suit) =>
+                String.Concat(HoldemEvaluator.Notation.Ranks[rank], HoldemEvaluator.Notation.Suits[suit]);
 
             /// <summary>
             /// Get the notation of a single card
             /// </summary>
             /// <returns>String representation of the card, e.g. "Ac" or "6s"</returns>
-            internal static string GetNotation(ulong card)
-            {
-                return GetNotation(Bin.GetRank(card), Bin.GetSuit(card));
-            }
+            internal static string GetNotation(ulong card) =>
+                GetNotation(Bin.GetRank(card), Bin.GetSuit(card));
 
             #endregion
 
@@ -83,7 +73,7 @@ namespace HoldemEvaluator
             /// <returns>True if the string is valid, false otherwise.</returns>
             public static bool isValidNotation(string cardString)
             {
-                if(String.IsNullOrWhiteSpace(cardString))
+                if (String.IsNullOrWhiteSpace(cardString))
                     return false;
 
                 // Normalize the string representation

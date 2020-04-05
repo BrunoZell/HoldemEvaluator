@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -34,7 +31,7 @@ namespace HoldemEvaluator
         public static int ParseRank(char rank)
         {
             rank = Char.ToUpper(rank, CultureInfo.InvariantCulture);
-            if(!Ranks.Contains(rank))
+            if (!Ranks.Contains(rank))
                 throw new ArgumentOutOfRangeException(nameof(rank), rank, $"{String.Join(", ", Ranks)} are the only valid ranks");
             return Array.IndexOf(Ranks, rank);
         }
@@ -46,7 +43,7 @@ namespace HoldemEvaluator
         public static int ParseSuit(char suit)
         {
             suit = Char.ToLower(suit, CultureInfo.InvariantCulture);
-            if(!Suits.Contains(suit))
+            if (!Suits.Contains(suit))
                 throw new ArgumentOutOfRangeException(nameof(suit), suit, $"{String.Join(", ", Suits)} are the only valid suits");
             return Array.IndexOf(Suits, suit);
         }
@@ -64,7 +61,7 @@ namespace HoldemEvaluator
         /// <returns>Formatted string representation of the hand. If the input is null an empty string is returned</returns>
         public static string NormalizeRepresentation(string rawString)
         {
-            if(rawString == null)
+            if (rawString == null)
                 return String.Empty;
 
             rawString = Regex.Replace(rawString, @"[\s,;]+", " ").Trim();
@@ -79,15 +76,15 @@ namespace HoldemEvaluator
         /// <returns>String representation with correct cases applied</returns>
         private static string HandleUpperLowerCase(string stringRepresentation)
         {
-            var stringCharArray = stringRepresentation.ToCharArray();
-            for(int i = 0; i < stringCharArray.Length; i++) {
+            char[] stringCharArray = stringRepresentation.ToCharArray();
+            for (int i = 0; i < stringCharArray.Length; i++) {
 
                 char lowerCase = Char.ToLower(stringCharArray[i], CultureInfo.InvariantCulture);
-                if(Suits.Contains(lowerCase))
+                if (Suits.Contains(lowerCase))
                     stringCharArray[i] = lowerCase;
 
                 char upperCase = Char.ToUpper(stringCharArray[i], CultureInfo.InvariantCulture);
-                if(Ranks.Contains(upperCase))
+                if (Ranks.Contains(upperCase))
                     stringCharArray[i] = upperCase;
             }
             return new string(stringCharArray);

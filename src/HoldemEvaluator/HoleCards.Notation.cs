@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -31,7 +27,7 @@ namespace HoldemEvaluator
             /// <returns>The correct HoleCard object</returns>
             public static HoleCards Parse(string holeCardString)
             {
-                if(!isValidNotation(holeCardString))
+                if (!isValidNotation(holeCardString))
                     throw new NoHoleCardsException();
 
                 return new HoleCards(CardCollection.Notation.Parse(holeCardString).Binary);
@@ -54,7 +50,7 @@ namespace HoldemEvaluator
             /// </summary>
             internal static string GetNotation(ulong holeCards)
             {
-                if(Hand.Bin.GetCardCount(holeCards) != 2)
+                if (Hand.Bin.GetCardCount(holeCards) != 2)
                     throw new ArgumentException("Hole cards have to be exactly two cards", nameof(holeCards));
 
                 return String.Join("", CardCollection.Bin.GetAllCards(holeCards));
@@ -73,9 +69,10 @@ namespace HoldemEvaluator
             /// <returns>True if the string is valid, false otherwise.</returns>
             public static bool isValidNotation(string holeCardString)
             {
-                if(holeCardString == null)
+                if (holeCardString == null)
                     return false;
-                if(holeCardString == String.Empty)
+
+                if (holeCardString.Length == 0)
                     return true;
 
                 // Normalize the string representation

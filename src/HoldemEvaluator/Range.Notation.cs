@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HoldemEvaluator
 {
@@ -61,15 +59,15 @@ namespace HoldemEvaluator
                     rangeString = HoldemEvaluator.Notation.NormalizeRepresentation(rangeString);
 
                     // Validation
-                    if(!isValidNotation(rangeString))
+                    if (!IsValidNotation(rangeString))
                         throw new NotARangeException();
 
-                    Range result = new Range();
+                    var result = new Range();
 
                     // AKs JTo QT
-                    foreach(Match hand in Regex.Matches(rangeString, HandRegex)) {
-                        if(hand.Success) {
-                            if(hand.Value.Length == 2 && !Hand.Grid.isPocketPair(hand.Value)) {
+                    foreach (Match hand in Regex.Matches(rangeString, HandRegex)) {
+                        if (hand.Success) {
+                            if (hand.Value.Length == 2 && !Hand.Grid.isPocketPair(hand.Value)) {
                                 // no suit specified
                                 // add hand for both suit
                                 SetResultData(result, Hand.Grid.GetPosition(hand.Value + 's'));
@@ -88,7 +86,7 @@ namespace HoldemEvaluator
                     IncludeSubRanges(rangeString, result, OpenSubRangeRegex, 1);
 
                     return result;
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw new NotARangeException(null, ex);
                 }
             }
@@ -106,10 +104,9 @@ namespace HoldemEvaluator
             private static void IncludeSubRanges(string rangeString, Range result, string subRangeRegex, int groupNumStart, int? groupNumEnd = null)
             {
                 int groupCount = 1 + (groupNumEnd.HasValue ? Math.Max(groupNumStart, groupNumEnd.Value) : groupNumStart);
-                foreach(Match subRange in Regex.Matches(rangeString, subRangeRegex)) {
-                    if(subRange.Success && subRange.Groups.Count >= groupCount) {
-                        foreach(var hand in GetSubRangeHands(subRange.Groups[groupNumStart].Value,
-                                                          groupNumEnd.HasValue ? subRange.Groups[groupNumEnd.Value].Value : null)) {
+                foreach (Match subRange in Regex.Matches(rangeString, subRangeRegex)) {
+                    if (subRange.Success && subRange.Groups.Count >= groupCount) {
+                        foreach (string hand in GetSubRangeHands(subRange.Groups[groupNumStart].Value, groupNumEnd.HasValue ? subRange.Groups[groupNumEnd.Value].Value : null)) {
                             SetResultData(result, Hand.Grid.GetPosition(hand));
                         }
                     }
@@ -141,14 +138,14 @@ namespace HoldemEvaluator
             private static string[] GetSubRangeHands(string startHand, string endHand)
             {
                 // Validate arguments
-                if(startHand != null && endHand != null) {
+                if (startHand != null && endHand != null) {
                     // none argument null
-                    if(Hand.Grid.isPocketPair(startHand) ^ Hand.Grid.isPocketPair(endHand))
+                    if (Hand.Grid.isPocketPair(startHand) ^ Hand.Grid.isPocketPair(endHand))
                         throw new ParsingException("Arguments not compatible. Either both are pocket pairs or both aren't");
                 } else {
-                    if(startHand != null ^ endHand != null) {
+                    if (startHand != null ^ endHand != null) {
                         // One argument null
-                        if(startHand == null) {
+                        if (startHand == null) {
                             // If one argument is null, it's always the second one
                             startHand = endHand;
                             endHand = null;
@@ -160,12 +157,12 @@ namespace HoldemEvaluator
                 }
 
                 // Check for open sub ranges first
-                if(endHand == null) {
+                if (endHand == null) {
                     // 66+ or ATs+ (startHand is then "66" or "ATs" or "A9")
                     return GetOpenSubRange(startHand);
                 }
 
-                if(Hand.Grid.isPocketPair(startHand) && Hand.Grid.isPocketPair(endHand)) {
+                if (Hand.Grid.isPocketPair(startHand) && Hand.Grid.isPocketPair(endHand)) {
                     // Pair range
                     // 66-TT
                     return GetBoundPairedSubRange(startHand, endHand);
@@ -184,12 +181,12 @@ namespace HoldemEvaluator
             /// <returns></returns>
             private static string[] GetBoundSubRange(string startHand, string endHand)
             {
-                if(startHand == null)
+                if (startHand == null)
                     throw new ArgumentNullException(nameof(startHand));
-                if(endHand == null)
+                if (endHand == null)
                     throw new ArgumentNullException(nameof(endHand));
 
-                if(startHand.Length == 2 && !Hand.Grid.isPocketPair(startHand) &&
+                if (startHand.Length == 2 && !Hand.Grid.isPocketPair(startHand) &&
                     endHand.Length == 2 && !Hand.Grid.isPocketPair(endHand)) {
                     // No pocket pairs. No suit specified.
                     // Apply the range for both suited and offsuit
@@ -201,7 +198,7 @@ namespace HoldemEvaluator
                 var pos1 = Hand.Grid.GetPosition(startHand);
                 var pos2 = Hand.Grid.GetPosition(endHand);
 
-                if(pos1.Item1 == pos2.Item1) {
+                if (pos1.Item1 == pos2.Item1) {
 
                     int start = Math.Min(pos1.Item2, pos2.Item2);
                     int end = Math.Max(pos1.Item2, pos2.Item2);
@@ -210,7 +207,7 @@ namespace HoldemEvaluator
                         .Select(i => Hand.Grid.GetNotation(pos1.Item1, i))
                         .ToArray();
 
-                } else if(pos1.Item2 == pos2.Item2) {
+                } else if (pos1.Item2 == pos2.Item2) {
 
                     int start = Math.Min(pos1.Item1, pos2.Item1);
                     int end = Math.Max(pos1.Item1, pos2.Item1);
@@ -231,8 +228,8 @@ namespace HoldemEvaluator
             /// <param name="endHand">Upper bound of the range  ("TT" for a sub range of "66-TT", can also be smaller than the lower bound)</param>
             private static string[] GetBoundPairedSubRange(string startHand, string endHand)
             {
-                var pos1 = Hand.Grid.GetPosition(startHand).Item1;
-                var pos2 = Hand.Grid.GetPosition(endHand).Item1;
+                int pos1 = Hand.Grid.GetPosition(startHand).Item1;
+                int pos2 = Hand.Grid.GetPosition(endHand).Item1;
 
                 int start = Math.Min(pos1, pos2);
                 int end = Math.Max(pos1, pos2);
@@ -248,15 +245,15 @@ namespace HoldemEvaluator
             /// <param name="startHand">"66" for an open range of "66+", "74o" for an open range of "74o+"</param>
             private static string[] GetOpenSubRange(string startHand)
             {
-                if(startHand == null)
+                if (startHand == null)
                     throw new ArgumentNullException(nameof(startHand));
 
-                if(Hand.Grid.isPocketPair(startHand)) {
+                if (Hand.Grid.isPocketPair(startHand)) {
                     return Enumerable.Range(0, Hand.Grid.GetPosition(startHand).Item1 + 1)
                         .Select(i => Hand.Grid.GetNotation(i, i))
                         .ToArray();
                 } else {
-                    if(startHand.Length == 2) {
+                    if (startHand.Length == 2) {
                         // No suit specified. Apply for both suited and offsuit.
                         return GetOpenSubRange(startHand + 's')
                             .Concat(GetOpenSubRange(startHand + 'o'))
@@ -283,9 +280,9 @@ namespace HoldemEvaluator
             {
                 // Todo: Write a range notation converter
                 var Representation = new StringBuilder();
-                for(int x = 0; x < Hand.RankCount; x++) {
-                    for(int y = 0; y < Hand.RankCount; y++) {
-                        if(range[x, y]) {
+                for (int x = 0; x < Hand.RankCount; x++) {
+                    for (int y = 0; y < Hand.RankCount; y++) {
+                        if (range[x, y]) {
                             Representation.Append(Hand.Grid.GetNotation(x, y));
                             Representation.Append(' ');
                         }
@@ -314,11 +311,12 @@ namespace HoldemEvaluator
             /// </summary>
             /// <param name="rangeString">The string to validate</param>
             /// <returns>True if the string is valid, false otherwise.</returns>
-            public static bool isValidNotation(string rangeString)
+            public static bool IsValidNotation(string rangeString)
             {
-                if(rangeString == null)
+                if (rangeString == null)
                     return false;
-                if(rangeString == String.Empty)
+
+                if (rangeString.Length == 0)
                     return true;
 
                 // Normalize the string representation

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HoldemEvaluator
@@ -19,20 +20,12 @@ namespace HoldemEvaluator
         /// <summary>
         /// Access the player with the best result
         /// </summary>
-        public PlayerResults Winner {
-            get {
-                return _playerResults.First();
-            }
-        }
+        public PlayerResults Winner => _playerResults.First();
 
         /// <summary>
         /// How many players are participating in the hand (which was evaluated)
         /// </summary>
-        public int PlayerCount {
-            get {
-                return _playerResults.Count;
-            }
-        }
+        public int PlayerCount => _playerResults.Count;
 
         /// <summary>
         /// If one or more players have the same best hand strength
@@ -41,6 +34,7 @@ namespace HoldemEvaluator
             get {
                 if (_playerResults.Count < 2)
                     return false;
+
                 return _playerResults[0].HandStrength == _playerResults[1].HandStrength;
             }
         }
@@ -48,22 +42,14 @@ namespace HoldemEvaluator
         /// <summary>
         /// Access a players result by his position at the table
         /// </summary>
-        public PlayerResults this[int position] {
-            get {
-                return _playerResults.First(p => p.Position == position);
-            }
-        }
+        public PlayerResults this[int position] => _playerResults.First(p => p.Position == position);
 
         #region IEnumerable implementation
-        public IEnumerator<PlayerResults> GetEnumerator()
-        {
-            return _playerResults.GetEnumerator();
-        }
+        public IEnumerator<PlayerResults> GetEnumerator() =>
+            _playerResults.GetEnumerator();
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() =>
+            GetEnumerator();
         #endregion
     }
 }
