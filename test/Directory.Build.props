@@ -1,0 +1,14 @@
+<Project>
+
+  <!-- Project defaults for the /test folder -->
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <CodeAnalysisRuleSet>../../HoldemEvaluator.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <Import Project="..\analyzers.props" />
+
+</Project>

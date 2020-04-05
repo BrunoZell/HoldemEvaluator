@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28714.193
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{6958E67D-7725-4111-80C0-65D59201D54D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		analyzers.props = analyzers.props
+		HoldemEvaluator.ruleset = HoldemEvaluator.ruleset
+		src\Directory.Build.props = src\Directory.Build.props
+		test\Directory.Build.props = test\Directory.Build.props
+		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E476D115-6CD5-4631-9A9B-D802CEDD4540}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A7CFC5FB-8DB9-4235-B70D-1C5F16019137}"
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6137A75B-60E7-4F45-A2E2-A16F3A091342}
+	EndGlobalSection
+EndGlobal
