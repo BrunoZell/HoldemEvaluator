@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +34,7 @@ namespace HoldemEvaluator
 
             public override string ToString()
             {
-                return $"{HoleCards}: {Equity.ToString("0.00 %")}";
+                return $"{HoleCards}: {Equity:0.00 %}";
             }
         }
     }

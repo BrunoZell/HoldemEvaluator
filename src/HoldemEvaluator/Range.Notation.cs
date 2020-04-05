@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -36,7 +37,7 @@ namespace HoldemEvaluator
             /// Matches a complete notation of a range.
             /// "ATs+ 94o+ 66+ AK KQs 72o-76o TT-AA"
             /// </summary>
-            private static readonly string RangeNotationRegex = string.Format(@"^(?:(?:{0})|(?:{1})|(?:{2})|\s+)*$", HandRegex, SubRangeRegex, OpenSubRangeRegex);
+            private static readonly string RangeNotationRegex = String.Format(CultureInfo.InvariantCulture, @"^(?:(?:{0})|(?:{1})|(?:{2})|\s+)*$", HandRegex, SubRangeRegex, OpenSubRangeRegex);
 
             #endregion
 

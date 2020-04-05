@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,7 +33,7 @@ namespace HoldemEvaluator
         /// <param name="rank">The rank as a char representing it.</param>
         public static int ParseRank(char rank)
         {
-            rank = Char.ToUpper(rank);
+            rank = Char.ToUpper(rank, CultureInfo.InvariantCulture);
             if(!Ranks.Contains(rank))
                 throw new ArgumentOutOfRangeException(nameof(rank), rank, $"{String.Join(", ", Ranks)} are the only valid ranks");
             return Array.IndexOf(Ranks, rank);
@@ -44,7 +45,7 @@ namespace HoldemEvaluator
         /// <param name="suit">The suit as a char representing it.</param>
         public static int ParseSuit(char suit)
         {
-            suit = Char.ToLower(suit);
+            suit = Char.ToLower(suit, CultureInfo.InvariantCulture);
             if(!Suits.Contains(suit))
                 throw new ArgumentOutOfRangeException(nameof(suit), suit, $"{String.Join(", ", Suits)} are the only valid suits");
             return Array.IndexOf(Suits, suit);
@@ -81,11 +82,11 @@ namespace HoldemEvaluator
             var stringCharArray = stringRepresentation.ToCharArray();
             for(int i = 0; i < stringCharArray.Length; i++) {
 
-                char lowerCase = Char.ToLower(stringCharArray[i]);
+                char lowerCase = Char.ToLower(stringCharArray[i], CultureInfo.InvariantCulture);
                 if(Suits.Contains(lowerCase))
                     stringCharArray[i] = lowerCase;
 
-                char upperCase = Char.ToUpper(stringCharArray[i]);
+                char upperCase = Char.ToUpper(stringCharArray[i], CultureInfo.InvariantCulture);
                 if(Ranks.Contains(upperCase))
                     stringCharArray[i] = upperCase;
             }

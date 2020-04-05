@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{6958E6
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		analyzers.props = analyzers.props
-		src\Directory.Build.props = src\Directory.Build.props
-		test\Directory.Build.props = test\Directory.Build.props
 		global.json = global.json
 		HoldemEvaluator.ruleset = HoldemEvaluator.ruleset
 		LICENSE = LICENSE
@@ -16,8 +14,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{6958E6
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E476D115-6CD5-4631-9A9B-D802CEDD4540}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A7CFC5FB-8DB9-4235-B70D-1C5F16019137}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoldemEvaluator", "src\HoldemEvaluator\HoldemEvaluator.csproj", "{EF040955-4F9C-46DF-85C8-1E60C932BD55}"
 EndProject

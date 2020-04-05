@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -83,7 +84,7 @@ namespace HoldemEvaluator
                     throw new ArgumentOutOfRangeException(nameof(handString), handString, $"Hole card string must match the regex \"{ Range.Notation.HandRegex }\"");
 
                 // Only the two chars for the ranks
-                string cardSubString = handString.Substring(0, 2).ToUpper();
+                string cardSubString = handString.Substring(0, 2).ToUpper(CultureInfo.InvariantCulture);
                 if(Notation.ParseRank(handString[0]) < Notation.ParseRank(handString[1])) {
                     // swap ranks if the second one is ranked higher
                     cardSubString = new string(cardSubString.Reverse().ToArray());
@@ -91,7 +92,7 @@ namespace HoldemEvaluator
 
                 // If necessary add the suit back
                 if(handString.Length == 3)
-                    return cardSubString + Char.ToLower(handString[2]);
+                    return cardSubString + Char.ToLower(handString[2], CultureInfo.InvariantCulture);
                 return cardSubString;
             }
 
@@ -105,7 +106,7 @@ namespace HoldemEvaluator
                     throw new ArgumentNullException(nameof(handString));
 
                 return Regex.IsMatch(handString, Range.Notation.HandRegex, RegexOptions.IgnoreCase) &&
-                    handString.Length == 2 && Char.ToUpper(handString[0]) == Char.ToUpper(handString[1]);
+                    handString.Length == 2 && Char.ToUpper(handString[0], CultureInfo.InvariantCulture) == Char.ToUpper(handString[1], CultureInfo.InvariantCulture);
             }
 
             /// <summary>
@@ -117,10 +118,10 @@ namespace HoldemEvaluator
                 for(int col = RankCount - 1; col >= 0; col--) {
                     for(int row = RankCount - 1; row >= 0; row--) {
                         if(col == row) {
-                            yield return String.Format("{0}{0}", Notation.Ranks[col]);
+                            yield return String.Format(CultureInfo.InvariantCulture, "{0}{0}", Notation.Ranks[col]);
                             continue;
                         }
-                        yield return (String.Format("{0}{1}{2}",
+                        yield return (String.Format(CultureInfo.InvariantCulture, "{0}{1}{2}",
                             Notation.Ranks[Math.Max(col, row)],
                             Notation.Ranks[Math.Min(col, row)],
                             row < col ? 's' : 'o'));
