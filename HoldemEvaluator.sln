@@ -7,10 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{6958E6
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		analyzers.props = analyzers.props
-		HoldemEvaluator.ruleset = HoldemEvaluator.ruleset
 		src\Directory.Build.props = src\Directory.Build.props
 		test\Directory.Build.props = test\Directory.Build.props
 		global.json = global.json
+		HoldemEvaluator.ruleset = HoldemEvaluator.ruleset
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -19,9 +19,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E476D115-6CD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A7CFC5FB-8DB9-4235-B70D-1C5F16019137}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoldemEvaluator", "src\HoldemEvaluator\HoldemEvaluator.csproj", "{EF040955-4F9C-46DF-85C8-1E60C932BD55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoldemEvaluator.Tests", "test\HoldemEvaluator.Tests\HoldemEvaluator.Tests.csproj", "{6600CE79-B9BA-4B91-A8A9-6A80DF010256}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF040955-4F9C-46DF-85C8-1E60C932BD55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF040955-4F9C-46DF-85C8-1E60C932BD55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF040955-4F9C-46DF-85C8-1E60C932BD55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF040955-4F9C-46DF-85C8-1E60C932BD55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6600CE79-B9BA-4B91-A8A9-6A80DF010256}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6600CE79-B9BA-4B91-A8A9-6A80DF010256}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6600CE79-B9BA-4B91-A8A9-6A80DF010256}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6600CE79-B9BA-4B91-A8A9-6A80DF010256}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EF040955-4F9C-46DF-85C8-1E60C932BD55} = {E476D115-6CD5-4631-9A9B-D802CEDD4540}
+		{6600CE79-B9BA-4B91-A8A9-6A80DF010256} = {A7CFC5FB-8DB9-4235-B70D-1C5F16019137}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6137A75B-60E7-4F45-A2E2-A16F3A091342}
